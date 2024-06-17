@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<robot name="niryo_one">
+    <!-- World link is generally used as a fixed reference point -->
+    <link name="world">
+    </link>
+
+    <!-- Platform as a standalone object -->
+    <link name="platform">
+        <visual>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>
+            <geometry>
+                <box size="1.0 1.0 0.1"/>
+            </geometry>
+            <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>
+            <geometry>
+                <box size="1.0 1.0 0.1"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Joint to anchor the platform to the world -->
+    <joint name="joint_world_to_platform" type="fixed">
+        <parent link="world"/>
+        <child link="platform"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Entire Robot Arm as a single object within its own system -->
+    <mujocoinclude file="arm_body.xml"/>
+</robot>

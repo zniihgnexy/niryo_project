@@ -1,0 +1,2 @@
+The simulation environment is a table and the robot arm in placing on the table. The table is 1000mm*1000mm in size. the objects are placed with in this size.
+When moving the obkect, you can't move the object outside the table. If you try to move the object outside the table, the object will be placed at the edge of the table.

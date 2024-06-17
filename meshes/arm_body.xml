@@ -1,0 +1,215 @@
+<robot>
+
+    <link name="base_link" quat="0.9961946980917455 0.0 0.0 0.08715574274765817">
+        <visual>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/arm_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/base_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="shoulder_link" quat="0.984807753012208 -0.0 -0.0 -0.17364817766693033">
+        <visual>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/shoulder_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/shoulder_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="arm_link" quat="0.9659258262890683 0.0 0.0 0.25881904510252074">
+        <visual>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/arm_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/arm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="elbow_link" quat="0.9396926207859084 -0.0 -0.0 -0.3420201433256687">
+        <visual>
+            <geometry>
+                <mesh filename="/home/xz2723/niryo_project/meshes/elbow_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="elbow_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="forearm_link" quat="0.9063077870366499 0.0 0.0 0.42261826174069944">
+        <visual>
+            <geometry>
+                <mesh filename="forearm_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="forearm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="wrist_link" quat="0.8660254037844387 -0.0 -0.0 -0.49999999999999994">
+        <visual>
+            <geometry>
+                <mesh filename="wrist_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="wrist_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="hand_link">
+        <visual>
+            <geometry>
+                <mesh filename="hand_link.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="hand_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Gripper Main Support -->
+    <link name="gripper_main_support">
+        <visual>
+            <geometry>
+                <mesh filename="g1_mainSupport.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g1_mainSupport.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Joint connecting the gripper to the robot's hand -->
+    <joint name="hand_to_gripper_joint" type="fixed">
+        <parent link="hand_link"/>
+        <child link="gripper_main_support"/>
+        <origin xyz="0.027 0 0.015" rpy="4.71239 0 1.5708"/> <!-- PI + PI/2, 0, PI/2 -->
+    </joint>
+
+    <!-- Gripper Left Clamp -->
+    <link name="gripper_clamp_left">
+        <visual>
+            <geometry>
+                <mesh filename="meshes/g1_clampLeft.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="meshes/g1_clampLeft.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="left_clamp_joint" type="prismatic">
+        <parent link="gripper_main_support"/>
+        <child link="gripper_clamp_left"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1" velocity="3.0" lower="-0.012" upper="0"/>
+    </joint>
+
+    <!-- Gripper Right Clamp -->
+    <link name="gripper_clamp_right">
+        <visual>
+            <geometry>
+                <mesh filename="meshes/g1_clampRight.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="meshes/g1_clampRight.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="right_clamp_joint" type="prismatic">
+        <parent link="gripper_main_support"/>
+        <child link="gripper_clamp_right"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1" velocity="3.0" lower="0" upper="0.012"/>
+    </joint>
+
+    <!-- Joints -->
+
+    <joint name="joint_world_to_base" type="fixed">
+        <parent link="../platform"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0.1" rpy="0 0 0"/> <!-- Elevates the base link by 0.1 meters to sit on top of the platform -->
+    </joint>
+
+
+    <joint name="joint_1" type="revolute">
+        <parent link="base_link"/>
+        <child link="shoulder_link"/>
+        <origin xyz="0 0 0.103" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-3.05433" upper="3.05433"/>
+    </joint>
+
+    <joint name="joint_2" type="revolute">
+        <parent link="shoulder_link"/>
+        <child link="arm_link"/>
+        <origin xyz="0 0 0.08" rpy="1.57079632679 -1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-1.57080" upper="0.640187"/>
+    </joint>
+
+    <joint name="joint_3" type="revolute">
+        <parent link="arm_link"/>
+        <child link="elbow_link"/>
+        <origin xyz="0.21 0.0 0" rpy="0 0 -1.57079632679"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-1.397485" upper="1.57079632679"/>
+    </joint>
+
+    <joint name="joint_4" type="revolute">
+        <parent link="elbow_link"/>
+        <child link="forearm_link"/>
+        <origin xyz="0.0415 0.03 0" rpy="0 1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-3.05433" upper="3.05433"/>
+    </joint>
+
+    <joint name="joint_5" type="revolute">
+        <parent link="forearm_link"/>
+        <child link="wrist_link"/>
+        <origin xyz="0 0 0.18" rpy="0 -1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-1.74533" upper="1.91986"/>
+    </joint>
+
+    <joint name="joint_6" type="revolute">
+        <parent link="wrist_link"/>
+        <child link="hand_link"/>
+        <origin xyz="0.0164 -0.0055 0" rpy="0 1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="1.0" lower="-2.57436" upper="2.57436"/>
+    </joint>
+</robot>

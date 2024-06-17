@@ -1,0 +1,2 @@
+Swap the position of cup and ball.
+Put the bottle on the right edge of the table.

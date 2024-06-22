@@ -4,6 +4,24 @@ import time
 from mujoco import viewer
 import matplotlib.pyplot as plt
 
+class PIDController:
+    def __init__(self, Kp, Ki, Kd):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.integral_error = 0
+        self.prev_error = 0
+        self.dt = 0.02  # 控制周期，需要与模拟步长相匹配
+
+    def calculate(self, target, current):
+        error = target - current
+        self.integral_error += error * self.dt
+        derivative = (error - self.prev_error) / self.dt
+        output = (self.Kp * error) + (self.Ki * self.integral_error) + (self.Kd * derivative)
+        self.prev_error = error
+        return output
+
+
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
 model = mujoco.MjModel.from_xml_path(model_path)
@@ -47,7 +65,7 @@ with viewer.launch_passive(model, data) as Viewer:
     Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 1
     Viewer.sync()
 
-    # Hold initial position for 5 seconds
+    # Hold initial position
     initial_hold_time = 1  # seconds
     start_time = time.time()
     print("Holding initial position for 2 seconds...")
@@ -62,9 +80,10 @@ with viewer.launch_passive(model, data) as Viewer:
 
     # kp, kv, ki = 200, 20, 0.1
     # set the PID gains in three arrays for each joint
-    kp = np.array([180, 100, 1, 150, 150, 150, 1, 1])
-    kv = np.array([180, 100, 1, 150, 150, 150, 1, 1])
-    ki = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.001, 0.001])
+    # first tuning kp, range 0-200
+    kp = np.array([179, 180, 180, 180, 173, 173, 0.25, 0.25])
+    kv = np.array([33, 33, 33, 33, 20, 20, 1, 1])
+    ki = np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.001, 0.001])
     previous_error = np.zeros(model.nv)
     integral_error = np.zeros(model.nv)
     desired_position = target_angles_values
@@ -101,6 +120,10 @@ for idx, name in enumerate(joint_names):
     plt.title(f'Joint {name} Angle Over Time')
     plt.xlabel('Time Step')
     plt.ylabel('Angle (radians)')
+    
+    ax.set_xlim([0, len(joint_angle_history[name])])
+    ax.set_ylim([min(joint_angle_history[name]) - 0.1, max(joint_angle_history[name]) + 0.1])
+    
     plt.savefig(f'./pictures/joint_{name}_angle.png')
 
 plt.savefig('./pictures/joint_angles.png')

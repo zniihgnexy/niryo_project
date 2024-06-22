@@ -2,70 +2,89 @@ import mujoco
 import numpy as np
 import time
 from mujoco import viewer
-from mujoco import _simulate
+import matplotlib.pyplot as plt
+
+class PIDController:
+    def __init__(self, Kp, Ki, Kd):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.integral_error = 0
+        self.prev_error = 0
+        self.dt = 0.02
+
+    def calculate(self, target, current):
+        error = target - current
+        self.integral_error += error * self.dt
+        derivative = (error - self.prev_error) / self.dt
+        output = (self.Kp * error) + (self.Ki * self.integral_error) + (self.Kd * derivative)
+        self.prev_error = error
+        return output
+
 
 # Load the model
-model_path = '/home/xz2723/niryo_project/meshes/Niryo_Ned2.robot'
+model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
 model = mujoco.MjModel.from_xml_path(model_path)
 data = mujoco.MjData(model)
 
 # Initialize angles
-initialize_angles = np.array([0.5, 0.5, 1, 0, 0, 0, 0, 0, 0.000, 0.000])
+initialize_angles = np.array([1.0000, 0.5000, 0.5000, 0.0000, 0.0000, 0.0000, 0.00000, 0.00000])
 
 # Joint names and target angles
 joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6', 'left_clamp_joint', 'right_clamp_joint']
 target_angles = {
-    'joint_1': 1, 
-    'joint_2': -0.5, 
-    'joint_3': 1, 
-    'joint_4': 0, 
-    'joint_5': 0, 
-    'joint_6': 0, 
-    'left_clamp_joint': 0.000, 
-    'right_clamp_joint': 0.000
+    'joint_1': 0.1000, 
+    'joint_2': 0.2000, 
+    'joint_3': 0.3000, 
+    'joint_4': 0.1000, 
+    'joint_5': 0.2000, 
+    'joint_6': 0.3000, 
+    'left_clamp_joint': 0.00000, 
+    'right_clamp_joint': 0.00000
 }
 
-# Give index to the names from the joint_names
-joint_names_index = {name: idx for idx, name in enumerate(joint_names)}
+# 0.1, 0.2, 0.3, 0.1, 0.2, 0.1
+
+# get the joint values from the target_angles dictionary
+target_angles_values = np.array([target_angles[name] for name in joint_names])
+
+# Map joint names to indices using mj_name2id
+joint_indices = {name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name) for name in joint_names}
+
+joint_angle_history = {name: [] for name in joint_names}
 
 # Initialize joint positions according to target angles
-for name, angle in target_angles.items():
-    joint_id = joint_names_index[name]
-    data.qpos[joint_id] = initialize_angles[joint_id]
+for name in joint_names:
+    joint_id = joint_indices[name]
+    data.qpos[joint_id] = initialize_angles[joint_indices[name]]
+    joint_angle_history[name].append(data.qpos[joint_id])
 
+# get the 3D position
+def get_3d_position(data, joint_names):
+    joint_pos = {}
+    for name in joint_names:
+        joint_id = joint_indices[name]
+        joint_pos[name] = data.geom(joint_id).xpos
+    return joint_pos
 
-# Create a window to visualize the simulation
-sim = _simulate.Simulate
-print("Sim: ", sim)
-print("sim type: ", type(sim))
+with viewer.launch_passive(model, data) as Viewer:
+    # Set viewer settings, such as enabling wireframe mode
+    Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 1
+    Viewer.sync()
 
-
-Viewer = viewer.launch(model, data)
-
-mujoco.mj_forward(model, data)
-
-# Simulation parameters
-duration = 10  # seconds
-steps = int(duration * 50)  # Assuming 100 Hz simulation frequency
-time_step = 1 / 50  # time step
-
-# Simulation loop
-for step in range(steps):
-    # import pdb; pdb.set_trace()
-    print("Step: ", step)
-    for name, target_angle in target_angles.items():
-        joint_id = joint_names_index[name]
-        # Simple proportional controller for demonstration
-        current_angle = data.qpos[joint_id]
-        data.qpos[joint_id] += 0.05 * (target_angle - current_angle)
-        print(f"Joint {name}: {current_angle:.2f} -> {data.qpos[joint_id]:.2f}")
-
-    # Perform simulation step
-    mujoco.mj_step(model, data)
-        # renderer.render()  # Update the renderer
-        # renderer.update_scene(data)  # Update the window
-
-    # Sleep for the remainder of the time step
-    time.sleep(time_step)
-
-print("Simulation ended.")
+    # Hold initial position
+    initial_hold_time = 1  # seconds
+    start_time = time.time()
+    print("Holding initial position for 2 seconds...")
+    while time.time() - start_time < initial_hold_time:
+        Viewer.sync()
+        time.sleep(0.05)
+    print("Initial position hold complete.")
+    # breakpoint()
+    
+    position_of_joints = get_3d_position(data, joint_names)
+    print(f"Initial position of each joint: {position_of_joints}")
+    
+    print("the position of geom 6: ", data.geom(6).xpos)
+    
+    # angles = my_chain.inverse_kinematics(target_vector, target_orientation)

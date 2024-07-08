@@ -63,3 +63,8 @@ Adjust these values based on your actual robot's reach and height capabilities. 
 
 #### 0708
 slides making
+
+调整了机械臂给的力度，不确定是否完善
+控制的部分还有不断的小幅度震荡，pid继续调整
+
+实际的坐标反馈还有问题，xyz的对应和实际机械臂的坐标对应不上，重新看kinematic的部分

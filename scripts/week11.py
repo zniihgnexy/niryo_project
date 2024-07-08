@@ -28,13 +28,10 @@ fixed_positions = {
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
-# Set initial joint positions to fixed positions
-for name, angle in fixed_positions.items():
-    joint_index = joint_indices[name]
-    data.qpos[joint_index] = angle
+target_position = [0.1, 0.2, 0.05]  # Specify the 3D position
 
-target_position = [0.2, 0.1, 0.1]  # Specify the 3D position
-target_angles = robot_chain.inverse_kinematics(target_position)
+send_in_position = target_position
+target_angles = robot_chain.inverse_kinematics(send_in_position)
 print("Target angles:", target_angles)
 
 check_positions = robot_chain.forward_kinematics(target_angles)
@@ -42,7 +39,7 @@ print("Check angles:", check_positions)
 
 # breakpoint()
 
-control_target_angles = target_angles[1:7]
+control_target_angles = target_angles[1:]
 print("Control target angles:", control_target_angles)
 
 # add two more angles to teh control target angles
@@ -59,50 +56,62 @@ print("Control target angles:", control_target_angles)
 # pids = [PIDController(kp[i], ki[i], kv[i]) for i in range(len(kp))]
 
 pids = {
-    'joint_1': PIDController(100, 0.06, 80),
-    'joint_2': PIDController(80, 0.06, 50),
+    'joint_1': PIDController(100, 0.5, 100),
+    'joint_2': PIDController(100, 0.8, 50),
     'joint_3': PIDController(100, 0.06, 80),
-    'joint_4': PIDController(160, 0.06, 33),
-    'joint_5': PIDController(120, 0.1, 33),
+    'joint_4': PIDController(100, 0.06, 80),
+    'joint_5': PIDController(100, 0.06, 80),
     'joint_6': PIDController(162.5, 0.06, 33),
-    'left_clamp_joint': PIDController(100, 0.06, 80),
-    'right_clamp_joint': PIDController(100, 0.06, 80)
+    'left_clamp_joint': PIDController(10, 0.06, 80),
+    'right_clamp_joint': PIDController(10, 0.06, 80)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
 
-def control_arm_to_position(target_angles, joint_indices, joint_names, pids, model, data):
-    target_angle = target_angles[i] if target_angles[i] is not None else current_position
-    control_signal = pids[name].calculate(target_angle, current_position)
-    data.ctrl[joint_indices[name]] = control_signal
-    joint_angle_history[name].append(current_position)
+# Function to control arm position
+def control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles):
+    for name in joint_names:
+        joint_index = joint_indices[name]
+        current_position = data.qpos[joint_index]
+        target_angle = target_angles[joint_indices[name]]
+        control_signal = pids[name].calculate(target_angle, current_position)
+        data.ctrl[joint_index] = control_signal
+        joint_angle_history[name].append(current_position)
 
 
 # Initialize the passive viewer
 with viewer.launch_passive(model, data) as Viewer:
-    Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 1
+    Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 0
     Viewer.sync()
 
     # Simulation loop for synchronized movement
     duration = 20  # seconds
     steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
     tolerance = 0.01  # tolerance for joint position
-
-    for step in range(steps):
-        for i, name in enumerate(joint_names):
-            current_position = data.qpos[joint_indices[name]]
-            control_arm_to_position(control_target_angles, joint_indices, joint_names, pids, model, data)
-            # mujoco.mj_step(model, data)
-            # Viewer.sync()
-            # time.sleep(1 / 50)
-
+    
+    # Set initial joint positions
+    for name, angle in fixed_positions.items():
+        joint_index = joint_indices[name]
+        data.qpos[joint_index] = angle
+        print("initial angles:", joint_index, angle)
+        Viewer.sync()
+        time.sleep(0.02)
+    
+    for _ in range(steps):
+        # print("Moving Joints 3, 4, and 5 first...")
+        control_arm_to_position(model, data, ['joint_3', 'joint_4', 'joint_5'], joint_indices, pids, control_target_angles)
         mujoco.mj_step(model, data)
         Viewer.sync()
-        time.sleep(1 / 50)
-    
-    # breakpoint()
+        time.sleep(0.02)
+        
+        # print("the rest of the joints...")
+        control_arm_to_position(model, data, ['joint_1', 'joint_2', 'joint_6', 'left_clamp_joint', 'right_clamp_joint'], joint_indices, pids, control_target_angles)
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
 
     print("All joints have moved towards their target positions.")
+
 
 # Plot joint angles over time
 fig, axs = plt.subplots(4, 2, figsize=(15, 10))
@@ -118,7 +127,7 @@ plt.show()
 
 for name in joint_names:
     index = joint_indices[name]
-    print(f"Joint {data.geom(index).name} position: {data.geom(index).xpos}")
+    # print(f"Joint {data.geom(index).name} position: {data.geom(index).xpos}")
 
 # Capture the final end-effector position
 end_position = [data.geom(6).xpos, data.geom(7).xpos]

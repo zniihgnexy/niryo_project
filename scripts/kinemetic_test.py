@@ -101,38 +101,9 @@ from mpl_toolkits.mplot3d import Axes3D
 urdf_file_path = "niryo_fixedpos.urdf"
 robot_chain_2 = Chain.from_urdf_file(urdf_file_path)
 
-robot_chain_2 = robot_chain_2.links.append(
-    URDFLink(
-        name="joint_6",
-        origin_translation=[0.0164, -0.0055, 0],
-        origin_orientation=[0, 0, 0],  # Adjust orientation if necessary
-        rotation=[0, 0, 0],
-        bounds=(1.6000, 1.60005)
-    )
-)
+# breakpoint()
 
-robot_chain_2 = robot_chain_2.links.append(
-    URDFLink(
-        name="left_clamp_joint",
-        origin_translation=[0.027, 0, 0.015],
-        origin_orientation=[0, 0, 0],
-        rotation=[1, 0, 0],
-        bounds=(-1.20, -0.004)
-    )
-)
-
-robot_chain_2 = robot_chain_2.links.append(
-    URDFLink(
-        name="right_clamp_joint",
-        origin_translation=[0.027, 0, 0.015],
-        origin_orientation=[0, 0, 0],
-        rotation=[1, 0, 0],
-        bounds=(0.00036, 1.20)
-    )
-)
-
-
-angles_second = robot_chain_2.inverse_kinematics([0.2, 0.1, 0.1])
+angles_second = robot_chain_2.inverse_kinematics([0.1, 0.2, 0.1])
 
 print("chain names:", robot_chain_2.name)
 print("Inverse Kinematics Joint Angles:", angles_second)

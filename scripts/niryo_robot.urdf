@@ -128,11 +128,11 @@
   <link name="tool_link_2">
 	</link>
   <!--Joints -->
-  <!-- <joint name="joint_world" type="fixed">
+  <joint name="joint_world" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
-  </joint> -->
+  </joint>
   <joint name="joint_1" type="revolute">
     <parent link="base_link"/>
     <child link="shoulder_link"/>
@@ -151,7 +151,7 @@
     <parent link="arm_link"/>
     <child link="elbow_link"/>
     <origin rpy="0 0 -1.5707963268" xyz="0.21 0.0 0"/>
-    <limit effort="1" lower="-1.34" upper="1.57" velocity="1.0"/>
+    <limit effort="1" lower="-0.40" upper="0.07" velocity="1.0"/>
     <axis xyz="0 0 1"/>
   </joint>
   <joint name="joint_4" type="revolute">
@@ -164,15 +164,17 @@
   <joint name="joint_5" type="revolute">
     <parent link="forearm_link"/>
     <child link="wrist_link"/>
-    <origin rpy="0 -1.5707963268 0" xyz="0 0 0.18"/>
+    <origin rpy="0 -1.5707963268 0" xyz="0 0 0.19"/>
     <limit effort="1" lower="-1.74533" upper="1.91986" velocity="1.0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <joint name="joint_6" type="revolute">
+  <joint name="joint_6" type="fixed">
     <parent link="wrist_link"/>
     <child link="hand_link"/>
-    <origin rpy="0 1.5707963268 0" xyz="0.0164 -0.0055 0"/>
+    <!-- rpy pass, xyz the above joint position with a name  -->
+    <origin rpy="0 0 1.60005" xyz="0.0164 -0.0055 0"/>
     <limit effort="1" lower="-2.57436" upper="2.57436" velocity="1.0"/>
+    <!-- <limit effort="1" lower="1.59990" upper="1.60005" velocity="1.0"/> -->
     <axis xyz="0 0 1"/>
   </joint>
   <joint name="hand_tool_joint_1" type="fixed">

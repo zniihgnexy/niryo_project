@@ -27,14 +27,14 @@ model = mujoco.MjModel.from_xml_path(model_path)
 data = mujoco.MjData(model)
 
 joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6', 'left_clamp_joint', 'right_clamp_joint']
-test_names = ['joint_1']  # Specify the joints to test
+test_names = ['joint_3']  # Specify the joints to test
 
 joint_ranges_list = {
     'joint_1': np.linspace(2.000, -2.000, 3),
-    'joint_2': np.linspace(0.61, -1.30, 3),
+    'joint_2': np.linspace(0.5, -0.8, 3),
     'joint_3': np.linspace(-1.34, 1.57, 3),
-    'joint_4': np.linspace(-1.55, -1.43, 3),
-    'joint_5': np.linspace(-1.30, -1.60, int(3)),
+    'joint_4': np.linspace(-2.089, 2.089, 10),
+    'joint_5': np.linspace(-1.74533, 1.91986, int(10)),
     'joint_6': np.linspace(-2.57436, 2.57436, 3),
     'left_clamp_joint': np.linspace(0, -0.012,3),
     'right_clamp_joint': np.linspace(0.012, 0, 3)
@@ -44,22 +44,22 @@ joint_ranges_list = {
 joint_ranges = {name: joint_ranges_list[name] for name in test_names}
 
 # breakpoint()
-kp_values = np.linspace(100, 180, 5)
-kd_values = np.linspace(30, 50, 5)
-ki_values = np.linspace(0, 3, 1)
+kp_values = np.linspace(100, 200, 5)
+kd_values = np.linspace(0, 100, 5)
+ki_values = np.linspace(0, 1, 2)
 
 joint_indices = {name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name) for name in joint_names}
 # pids = {name: PIDController(180, 0.06, 33) for name in joint_names}
 
 pids = {
-    'joint_1': PIDController(162.5, 0.06, 33),
-    'joint_2': PIDController(200, 0.06, 33),
-    'joint_3': PIDController(160, 0.06, 33),
-    'joint_4': PIDController(240, 1.44, 39.0),
-    'joint_5': PIDController(147, 0.06, 33),
-    'joint_6': PIDController(180, 0.06, 33),
-    'left_clamp_joint': PIDController(180, 0.06, 33),
-    'right_clamp_joint': PIDController(180, 0.06, 33)
+    'joint_1': PIDController(100, 0.5, 100),
+    'joint_2': PIDController(100, 0.8, 50),
+    'joint_3': PIDController(100, 0.06, 80),
+    'joint_4': PIDController(100, 0.06, 80),
+    'joint_5': PIDController(100, 0.06, 80),
+    'joint_6': PIDController(162.5, 0.06, 33),
+    'left_clamp_joint': PIDController(10, 0.06, 80),
+    'right_clamp_joint': PIDController(10, 0.06, 80)
 }
 
 best_kp_results = {}
@@ -69,12 +69,12 @@ best_ki_results = {}
 oscillation_history = {}
 
 fixed_positions = {
-    'joint_1': 2.949,
-    'joint_2': -0.0135,
+    'joint_1': 0.00369,
+    'joint_2': 0.61,
     'joint_3': -0.511,
     'joint_4': -1.48,
-    'joint_5': -1.000,
-    'joint_6': -1.311,
+    'joint_5': -1.49,
+    'joint_6': 0.000,
     'left_clamp_joint': -0.004,
     'right_clamp_joint': 0.00036
 }
@@ -87,7 +87,7 @@ fixed_positions = {
     'joint_2': -0.0135,
     'joint_3': -0.511,
     'joint_4': -1.48,
-    'joint_5': -1,49,
+    'joint_5': -1.49,
     'joint_6': 0.901,
     'left_clamp_joint': -0.004,
     'right_clamp_joint': 0.00036
@@ -146,10 +146,26 @@ with viewer.launch_passive(model, data) as Viewer:
 
                         start_time = time.time()
                         while time.time() - start_time < 5:
+                            
                             current_position = data.qpos[joint_indices[name]]
-                            control_signal = pids[name].calculate(target, current_position)
-                            data.ctrl[joint_indices[name]] = control_signal
-                            mujoco.mj_step(model, data)
+                            # control_signal = pids[name].calculate(target, current_position)
+                            # data.ctrl[joint_indices[name]] = control_signal
+                            # mujoco.mj_step(model, data)
+                            
+                            for ori_name in joint_names:
+                                if ori_name != name:
+                                    control_signal = pids[name].calculate(target, fixed_positions[name])
+                                    data.ctrl[joint_indices[name]] = control_signal
+                                    mujoco.mj_step(model, data)
+                                    Viewer.sync()
+                                    time.sleep(0.01)
+                                else:
+                                    control_signal = pids[name].calculate(target, current_position)
+                                    data.ctrl[joint_indices[name]] = control_signal
+                                    mujoco.mj_step(model, data)
+                                    Viewer.sync()
+                                    time.sleep(0.01)
+
                             Viewer.sync()
                             time.sleep(0.01)
                             position_history.append(current_position)
@@ -178,7 +194,7 @@ with viewer.launch_passive(model, data) as Viewer:
                             best_kp = Kp
                             best_kd = Kd
                             best_ki = Ki
-
+                        
                 print(f"Test completed for {name} at Kp = {Kp}  Ki = {Ki}  Kd = {Kd} with smoothness score = {best_smoothness_score}")
         best_kp_results[name] = best_kp
         best_kd_results[name] = best_kd

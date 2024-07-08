@@ -1,144 +1,172 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<robot name="niryo_one" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Properties -->
+  
+  <!-- Links -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.1"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/base_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.1"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0.203"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/shoulder_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.203"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/shoulder_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-<!--
-    without_mesh_niryo_one.urdf.xacro
-    Copyright (C) 2017 Niryo
-    All rights reserved.
+  <link name="arm_link">
+    <visual>
+      <origin xyz="0 0 0.08"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/arm_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.08"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/arm_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+  <link name="elbow_link">
+    <visual>
+      <origin xyz="0.21 0 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/elbow_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.21 0 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/elbow_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  <link name="forearm_link">
+    <visual>
+      <origin xyz="0.0415 0.03 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/forearm_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0415 0.03 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/forearm_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+  <link name="wrist_link">
+    <visual>
+      <origin xyz="0 0 0.18"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/wrist_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.18"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/wrist_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="niryo_one">
-	
-	<!-- Properties -->
+  <link name="hand_link">
+    <visual>
+      <origin xyz="0.0164 -0.0055 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/hand_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0164 -0.0055 0"/>
+      <geometry>
+        <mesh filename="package://niryo_one_description/meshes/v2/stl/hand_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-    <xacro:property name="distance_origin_shoulder_z" value="0.103" />
-    <xacro:property name="distance_shoulder_arm_z" value="0.080" />
-    <xacro:property name="distance_arm_elbow_x" value="0.210" />
-    <xacro:property name="distance_arm_elbow_y" value="0.0" />
-    <xacro:property name="distance_elbow_forearm_x" value="0.0415" />
-    <xacro:property name="distance_elbow_forearm_y" value="0.030" />
-    <xacro:property name="distance_forearm_wrist_z" value="0.180" />
-    <xacro:property name="distance_wrist_hand_x" value="0.0164" />
-    <xacro:property name="distance_wrist_hand_y" value="-0.0055" />
-    <xacro:property name="distance_hand_tool" value="0.0073" />
-	
-	<xacro:property name="PI" value="3.14159265359" />
-    
-    <xacro:property name="limit_low_shoulder_rotation" value="-3.05433" />
-    <xacro:property name="limit_up_shoulder_rotation" value="3.05433" />
-    <xacro:property name="limit_low_arm_rotation" value="-1.57080" />
-    <xacro:property name="limit_up_arm_rotation" value="0.640187" />
-    <xacro:property name="limit_low_elbow_rotation" value="-1.397485" />
-    <xacro:property name="limit_up_elbow_rotation" value="${PI/2}" />
-    <xacro:property name="limit_low_forearm_rotation" value="-3.05433" />
-    <xacro:property name="limit_up_forearm_rotation" value="3.05433" />
-    <xacro:property name="limit_low_wrist_rotation" value="-1.74533" />
-    <xacro:property name="limit_up_wrist_rotation" value="1.91986" />
-    <xacro:property name="limit_low_hand_rotation" value="-2.57436" />
-    <xacro:property name="limit_up_hand_rotation" value="2.57436" />
+  <!-- Joints -->
+  <joint name="joint_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.203" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.949" upper="2.949" velocity="1.0" effort="1"/>
+  </joint>
+  
+  <joint name="joint_2" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="arm_link"/>
+    <origin xyz="0 0 0.08" rpy="0.5 -0.5 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.83" upper="0.61" velocity="1.0" effort="1"/>
+  </joint>
+  
+  <joint name="joint_3" type="revolute">
+    <parent link="arm_link"/>
+    <child link="elbow_link"/>
+    <origin xyz="0.21 0 0" rpy="0 0 -1.5708"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.34" upper="1.57" velocity="1.0" effort="1"/>
+  </joint>
+  
+  <joint name="joint_4" type="revolute">
+    <parent link="elbow_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="0.0415 0.03 0" rpy="0 1.5708 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.089" upper="2.089" velocity="1.0" effort="1"/>
+  </joint>
+  
+  <joint name="joint_5" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="wrist_link"/>
+    <origin xyz="0 0 0.18" rpy="0 -1.5708 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.74533" upper="1.91986" velocity="1.0" effort="1"/>
+  </joint>
+  
+  <joint name="joint_6" type="revolute">
+    <parent link="wrist_link"/>
+    <child link="hand_link"/>
+    <origin xyz="0.0164 -0.0055 0" rpy="0 1.5708 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.57436" upper="2.57436" velocity="1.0" effort="1"/>
+  </joint>
 
-
-	<!-- Links -->
-
-    <link name="world"/>
-
-    <link name="base_link">
-	</link>
-
-    <link name="shoulder_link">
-	</link>
-
-    <link name="arm_link">
-	</link>
-	
-    <link name="elbow_link">
-	</link>
-
-    <link name="forearm_link">
-	</link>
-
-    <link name="wrist_link">
-	</link>
-	
-    <link name="hand_link">
-	</link>
-	
-    <link name="tool_link">
-	</link>
-
-
-	<!--Joints -->
-
-    <joint name="joint_world" type="fixed">
-        <parent link="world" />
-        <child link="base_link" />
-        <origin xyz="0 0 0" rpy="0 0 0" />
-    </joint>
-
-	<joint name="joint_1" type="revolute">
-        <parent link="base_link" />
-        <child link="shoulder_link" />
-		<origin xyz="0 0 0.103" rpy="0 0 0" />
-		<axis xyz="0 0 1" />
-		<limit effort="1" velocity="1.0" lower="-3.05433" upper="3.05433" />
-	</joint>
-
-	<joint name="joint_2" type="revolute">
-        <parent link="shoulder_link" />
-        <child link="arm_link" />
-        <origin xyz="0 0 0.080" rpy="1.570796326795 -1.570796326795 0" />
-		<limit effort="1" velocity="1.0" lower="-1.57080" upper="0.640187" />
-		<axis xyz="0 0 1" />
-	</joint>
-
-	<joint name="joint_3" type="revolute">
-        <parent link="arm_link" />
-        <child link="elbow_link" />
-        <origin xyz="0.210 0.0 0" rpy="0 0 -1.570796326795" />
-		<limit effort="1" velocity="1.0" lower="-1.397485" upper="1.570796326795" />
-		<axis xyz="0 0 1" />	
-	</joint>
-
-	<joint name="joint_4" type="revolute">
-        <parent link="elbow_link" />
-        <child link="forearm_link" />
-        <origin xyz="0.0415 0.030 0" rpy="0 1.570796326795 0" />
-		<limit effort="1" velocity="1.0" lower="-3.05433" upper="3.05433" />
-		<axis xyz="0 0 1" />
-	</joint>
-
-	<joint name="joint_5" type="revolute">
-        <parent link="forearm_link" />
-        <child link="wrist_link" />
-		<origin xyz="0 0 0.180" rpy="0 -1.570796326795 0" />
-		<limit effort="1" velocity="1.0" lower="-1.74533" upper="1.91986" />
-		<axis xyz="0 0 1" />
-	</joint>
-
-	<joint name="joint_6" type="revolute">
-        <parent link="wrist_link" />
-        <child link="hand_link" />
-        <origin xyz="0.0164 -0.0055 0" rpy="0 1.570796326795 0" />
-		<limit effort="1" velocity="1.0" lower="-2.57436" upper="2.57436" />
-		<axis xyz="0 0 1" />
-	</joint>
-
-	<joint name="hand_tool_joint" type="fixed">
-        <parent link="hand_link" />
-        <child link="tool_link" />
-        <origin xyz="0 0 0.0073" rpy="-1.570796326795 -1.570796326795 0" />
-	</joint>
-
+  <joint name="hand_tool_joint_1" type="fixed">
+    <parent link="hand_link"/>
+    <child link="tool_link_1"/>
+    <origin xyz="0.027 0 0.015" rpy="-0.5 0.5 0.5"/>
+  </joint>
+  
+  <joint name="hand_tool_joint_2" type="fixed">
+    <parent link="hand_link"/>
+    <child link="tool_link_2"/>
+    <origin xyz="0.027 0 0.015" rpy="-0.5 0.5 0.5"/>
+  </joint>
+  
 </robot>

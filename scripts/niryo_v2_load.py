@@ -4,7 +4,7 @@ import time
 import mujoco.viewer
 
 # Load your model
-model = mujoco.MjModel.from_xml_path('/home/xz2723/niryo_project/meshes/niryo_arm_table.xml')
+model = mujoco.MjModel.from_xml_path('/home/xz2723/niryo_project/meshes/mjmodel.xml')
 data = mujoco.MjData(model)
 
 # Create a viewer for the simulation

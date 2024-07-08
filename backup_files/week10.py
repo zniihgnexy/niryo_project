@@ -4,7 +4,7 @@ import time
 from mujoco import viewer
 import matplotlib.pyplot as plt
 from pid_controller import PIDController
-from kinemetic import Kinematic
+from scripts.kinemetic_test import robot_chain
 
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
@@ -25,9 +25,13 @@ for name in joint_names:
     joint_angle_history[name].append(data.qpos[joint_id])
     
 # Initialize kinematic solver
-kinematic = Kinematic("./niryo_two.urdf")
-target_position = [-0.1, -0.1, 0.5]  # Modify this as needed
-target_angles = kinematic.inverse_kinematics(target_position)
+# kinematic = Kinematic("./niryo_two.urdf")
+target_position = [0.3, 0.3, 0.3]  # Modify this as needed
+target_angles = robot_chain.inverse_kinematics(target_position)
+# target_angles = kinematic.inverse_kinematics(target_position)
+
+
+target_angles = np.array([1.0000, 0.5000, -1.0000, 0.0000, 0.0000, 0.0000, 0.00000, 0.00000])
 print("Inverse Kinematics Result:", target_angles)
 
 # Convert target angles to a numpy array if it's not empty or None
@@ -71,25 +75,39 @@ with viewer.launch_passive(model, data) as Viewer:
 
     # PID controller setup
     kp = np.array([179, 180, 180, 180, 173, 173, 0.25, 0.25])
-    kv = np.array([33, 33, 33, 33, 20, 20, 1, 1])
-    ki = np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.001, 0.001])
+    kv = np.array([33, 100, 33, 33, 20, 20, 1, 1])
+    ki = np.array([0, 0, 0, 0, 0, 0, 0, 0])
     pids = [PIDController(kp[i], ki[i], kv[i]) for i in range(len(kp))]
     
     # Simulation parameters
     duration = 10  # seconds
     steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
     time_step = 1 / 50
+    # one_movement_time = 2  # seconds
+    # trajectory = np.linspace(initialize_angles, target_angles, one_movement_time * 50)
 
     # Simulation loop
     for step in range(steps):
         for i, name in enumerate(joint_names):
             joint_id = joint_indices[name]
             current_position = data.qpos[joint_id]
+            current_target_angles = target_angles[i]
+            
+            # if step < one_movement_time * 50:
+            #     current_target_angles = trajectory[step][i]
+            #     print("current_target_angles: ", current_target_angles)
+            #     control_signal = pids[i].calculate(current_target_angles, current_position)
+            # else:
+            #     current_target_angles = target_angles[i]
+            #     control_signal = pids[i].calculate(current_target_angles, current_position)
+                
+
             error = target_angles[joint_id] - current_position
 
             # Calculate control signal using PID
-            control_signal = pids[i].calculate(target_angles[joint_id], current_position)
+            control_signal = pids[i].calculate(current_target_angles, current_position)
             data.ctrl[joint_id] = control_signal
+            # print(f"Joint {name} at angle value {data.qpos[joint_indices[name]]} with target {current_target_angles} and control signal {control_signal}")
             joint_angle_history[name].append(current_position)
 
         mujoco.mj_step(model, data)
@@ -97,7 +115,8 @@ with viewer.launch_passive(model, data) as Viewer:
         time.sleep(time_step)
 
     print("Simulation ended.")
-    print("final joint position: ", data.geom(6).name, data.geom(6).xpos)
+    print("final joint position: ", data.geom(6).name, data.geom(6).xpos, data.qpos[joint_indices['left_clamp_joint']])
+    print("final joint angles: ", [data.qpos[joint_indices[name]] for name in joint_names])
 
 # Plot joint angles over time
 fig, axs = plt.subplots(2, 4, figsize=(20, 10))

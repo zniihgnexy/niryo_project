@@ -28,9 +28,9 @@ fixed_positions = {
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
-target_position = [0.1, 0.2, 0.05]  # Specify the 3D position
+target_position = [0.1, 0.2, 0.2]
 
-send_in_position = target_position
+send_in_position = target_position + np.array([0, 0, 0.05])
 target_angles = robot_chain.inverse_kinematics(send_in_position)
 print("Target angles:", target_angles)
 
@@ -57,24 +57,61 @@ print("Control target angles:", control_target_angles)
 
 pids = {
     'joint_1': PIDController(100, 0.5, 100),
-    'joint_2': PIDController(100, 0.8, 50),
-    'joint_3': PIDController(100, 0.06, 80),
-    'joint_4': PIDController(100, 0.06, 80),
-    'joint_5': PIDController(100, 0.06, 80),
-    'joint_6': PIDController(162.5, 0.06, 33),
-    'left_clamp_joint': PIDController(10, 0.06, 80),
-    'right_clamp_joint': PIDController(10, 0.06, 80)
+    'joint_2': PIDController(100, 0.8, 100),
+    'joint_3': PIDController(100, 0.06, 100),
+    'joint_4': PIDController(100, 0.06, 100),
+    'joint_5': PIDController(100, 0.06, 100),
+    'joint_6': PIDController(162.5, 0.06, 100),
+    'left_clamp_joint': PIDController(100, 0.06, 160),
+    'right_clamp_joint': PIDController(100, 0.06, 160)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
 
 # Function to control arm position
+def control_arm_to_position_with_thres(model, data, joint_names, joint_indices, pids, target_angles):
+    for name in joint_names:
+        joint_index = joint_indices[name]
+        current_position = data.qpos[joint_index]
+        target_angle = target_angles[joint_indices[name]]
+        
+        if target_angle - current_position > 0.1:
+            control_signal = pids[name].calculate(target_angle, current_position)
+        else:
+            control_signal = 0.0
+        
+        print("control_signal", control_signal)
+        # breakpoint()
+        # print("cointrol signal", control_signal)
+        data.ctrl[joint_index] = control_signal
+        joint_angle_history[name].append(current_position)
+
 def control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles):
     for name in joint_names:
         joint_index = joint_indices[name]
         current_position = data.qpos[joint_index]
         target_angle = target_angles[joint_indices[name]]
+
         control_signal = pids[name].calculate(target_angle, current_position)
+        
+        # breakpoint()
+        print("cointrol signal", control_signal)
+        data.ctrl[joint_index] = control_signal
+        joint_angle_history[name].append(current_position)
+
+def control_arm_to_position_gripper(model, data, joint_names, joint_indices, pids, target_angles):
+    for name in joint_names:
+        joint_index = joint_indices[name]
+        current_position = data.qpos[joint_index]
+        target_angle = target_angles[joint_indices[name]]
+        
+        if target_angle - current_position > 0.01:
+            control_signal = pids[name].calculate(target_angle, current_position)
+        else:
+            control_signal = 0.0
+        
+        # breakpoint()
+        # print("cointrol signal", control_signal)
         data.ctrl[joint_index] = control_signal
         joint_angle_history[name].append(current_position)
 
@@ -85,7 +122,7 @@ with viewer.launch_passive(model, data) as Viewer:
     Viewer.sync()
 
     # Simulation loop for synchronized movement
-    duration = 20  # seconds
+    duration = 10  # seconds
     steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
     tolerance = 0.01  # tolerance for joint position
     
@@ -94,21 +131,37 @@ with viewer.launch_passive(model, data) as Viewer:
         joint_index = joint_indices[name]
         data.qpos[joint_index] = angle
         print("initial angles:", joint_index, angle)
-        Viewer.sync()
-        time.sleep(0.02)
     
-    for _ in range(steps):
-        # print("Moving Joints 3, 4, and 5 first...")
-        control_arm_to_position(model, data, ['joint_3', 'joint_4', 'joint_5'], joint_indices, pids, control_target_angles)
-        mujoco.mj_step(model, data)
-        Viewer.sync()
-        time.sleep(0.02)
+    Viewer.sync()
+    time.sleep(0.02)
+    
+    # for _ in range(steps):
+    #     # print("Moving Joints 3, 4, and 5 first...")
+    #     control_arm_to_position_with_thres(model, data, ['joint_3', 'joint_4', 'joint_5', 'joint_6'], joint_indices, pids, control_target_angles)
+    #     mujoco.mj_step(model, data)
+    #     Viewer.sync()
+    #     time.sleep(0.02)
         
-        # print("the rest of the joints...")
-        control_arm_to_position(model, data, ['joint_1', 'joint_2', 'joint_6', 'left_clamp_joint', 'right_clamp_joint'], joint_indices, pids, control_target_angles)
+    #     # print("the rest of the joints...")
+    #     control_arm_to_position(model, data, ['joint_1', 'joint_2'], joint_indices, pids, control_target_angles)
+    #     mujoco.mj_step(model, data)
+    #     Viewer.sync()
+    #     time.sleep(0.02)
+        
+    #     control_arm_to_position_gripper(model, data, ['left_clamp_joint', 'right_clamp_joint'], joint_indices, pids, control_target_angles)
+    #     mujoco.mj_step(model, data)
+    #     Viewer.sync()
+    #     time.sleep(0.02)
+    
+    for step in range(steps):
+        # breakpoint()
+        # if step == 1:
+        # Update control signals for all joints at each step
+        control_arm_to_position(model, data, joint_names, joint_indices, pids, control_target_angles)
+        
         mujoco.mj_step(model, data)
         Viewer.sync()
-        time.sleep(0.02)
+        time.sleep(0.02)  # Sleep to match the assumed simulation frequency
 
     print("All joints have moved towards their target positions.")
 

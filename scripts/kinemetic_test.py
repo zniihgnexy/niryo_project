@@ -1,79 +1,79 @@
 from ikpy.chain import Chain
-from ikpy.link import URDFLink
+from ikpy.link import URDFLink, OriginLink
 import numpy as np
 
 # from roboticstoolbox import Chain, URDFLink
 
-robot_chain = Chain(name='niryo_one', links=[
+niryo_one_chain = Chain(name='niryo_one', links=[
+    OriginLink(),
     URDFLink(
-        name="base",
-        origin_translation=[0, 0, 0.1],
+        name="shoulder_link",
+        origin_translation=[0, 0, 0.203],
         origin_orientation=[0, 0, 0],
-        rotation=[0, 0, 0],
-        bounds=None
+        rotation=[0, 0, 1]
     ),
     URDFLink(
-        name="joint_1",
-        origin_translation=[0, 0, 0.103],
-        origin_orientation=[0, 0, 0],
-        rotation=[0, 0, 1],
-        bounds=(-2.949, 2.949)
-    ),
-    URDFLink(
-        name="joint_2",
+        name="arm_link",
         origin_translation=[0, 0, 0.08],
-        origin_orientation=[0.0, 1.5707963267948966, 0.0],  
-        rotation=[0, 0, 1],
-        bounds=(-1.83, 0.61)
+        origin_orientation=[0.0, 1.5707963267948966, 0.0],  # Identity quaternion
+        rotation=[0, 1, 0],
+        bounds=[-2.949, 2.949]
     ),
     URDFLink(
-        name="joint_3",
+        name="elbow_link",
         origin_translation=[0.21, 0, 0],
-        origin_orientation=[-1.5707969456925137, -0.0, 0.0],  # Adjust orientation if necessary
-        rotation=[0, 0, 1],
-        bounds=(-1.34, 1.57)
+        origin_orientation=[-1.5707969456925137, -0.0, 0.0],  # Quaternion representation
+        rotation=[0, 1, 0],
+        bounds=[-1.83, 0.61]
     ),
     URDFLink(
-        name="joint_4",
+        name="forearm_link",
         origin_translation=[0.0415, 0.03, 0],
-        origin_orientation=[3.141592653589793, -1.5707963267948966, 3.141592653589793],  # Adjust orientation if necessary
+        origin_orientation=[3.141592653589793, -1.5707963267948966, 3.141592653589793],  # Quaternion representation
         rotation=[0, 0, 1],
-        bounds=(-2.089, 2.089)
+        bounds=[-1.34, 1.57]
     ),
     URDFLink(
-        name="joint_5",
+        name="wrist_link",
         origin_translation=[0, 0, 0.19],
-        origin_orientation=[3.141592653589793, 1.5707963267948966, 3.141592653589793],  # Adjust orientation if necessary
-        rotation=[0, 0, 1],
-        bounds=(-1.74533, 1.91986)
+        origin_orientation=[3.141592653589793, 1.5707963267948966, 3.141592653589793],  # Quaternion representation
+        rotation=[0, 1, 0],
+        bounds=[-2.089, 2.089]
     ),
     URDFLink(
-        name="joint_6",
+        name="hand_link",
         origin_translation=[0.0164, -0.0055, 0],
-        origin_orientation=[3.141592653589793, -1.5707963267948966, 3.141592653589793],  # Adjust orientation if necessary
+        origin_orientation=[3.141592653589793, -1.5707963267948966, 3.141592653589793],  # Quaternion representation
         rotation=[0, 0, 1],
-        bounds=(-2.57436, 2.57436)
+        bounds=[-1.74533, 1.91986]
     ),
     URDFLink(
-        name="left_clamp_joint",
-        origin_translation=[0.027, 0, 0.015],
-        origin_orientation=[1.5707923267988968, 0.0, -1.5707963267988967],  # Fixed joint
-        rotation=[1, 0, 0],  # Slide along x-axis
-        bounds=(-0.012, 0)
+        name="g1_mainSupport_link",
+        origin_translation=[0, 0, 0.0203],
+        origin_orientation=[0.0, 1.546219296791616, 0.0],  # Quaternion representation
+        rotation=[0, 0, 0],  # Slide joint
+        bounds=[-0.012, 0.012]
     ),
     URDFLink(
-        name="right_clamp_joint",
-        origin_translation=[0.027, 0, 0.015],
-        origin_orientation=[1.5707923267988968, 0.0, -1.570796326798896],  # Fixed joint
-        rotation=[1, 0, 0],  # Slide along x-axis
-        bounds=(0, 0.012)
+        name="gripper_clamp_left",
+        origin_translation=[0.007, 0, 0],
+        origin_orientation=[1.5707923267988968, 0.0, -1.5707963267988967],  # Quaternion representation
+        rotation=[1, 0, 0],  # Slide joint
+        bounds=[-0.012, 0.012]
+    ),
+    URDFLink(
+        name="gripper_clamp_right",
+        origin_translation=[0.007, 0, 0],
+        origin_orientation=[1.5707923267988968, 0.0, -1.5707963267988967],  # Quaternion representation
+        rotation=[1, 0, 0],  # Slide joint
+        bounds=[-0.012, 0.012]
     )
 ])
 
 
 # Example usage of the chain for IK
 target_position = [0.1, 0.2, 0.1]  # Example target position
-ik_angles = robot_chain.inverse_kinematics(target_position)
+ik_angles = niryo_one_chain.inverse_kinematics(target_position)
 
 print("Inverse Kinematics Joint Angles 1:", ik_angles)
 
@@ -95,16 +95,18 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-robot_chain.plot(ik_angles, ax)    
+niryo_one_chain.plot(ik_angles, ax)    
 plt.show()
 
 # loadlink from urdf file
 urdf_file_path = "niryo_robot.urdf"
 robot_chain_2 = Chain.from_urdf_file(urdf_file_path)
 
+target_position_2 = target_position + np.array([0.0, 0.0, 0.1])
+
 # breakpoint()
 
-angles_second = robot_chain_2.inverse_kinematics([0.1, 0.2, 0])
+angles_second = robot_chain_2.inverse_kinematics(target_position_2)
 
 print("chain names:", robot_chain_2.name)
 print("Inverse Kinematics Joint Angles 2:", angles_second)

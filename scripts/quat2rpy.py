@@ -24,6 +24,7 @@ quat_elbow = [0.707107, 0, 0, -0.707107]
 quat_forearm = [0.707107, 0, 0.707107, 0]
 quat_wrist = [0.707107, 0, -0.707107, 0]
 quat_hand = [0.707107, 0, 0.707107, 0]
+quat_main_support = [0.707, 0,  -0.707, 0]
 quat_gripper_left = [-0.499999, 0.499999, 0.500001, -0.500001]
 quat_gripper_right = [-0.499999, 0.499999, 0.500001, -0.500001]
 
@@ -32,6 +33,7 @@ print("Roll, pitch, yaw for elbow:", quaternion_to_rpy(quat_elbow))
 print("Roll, pitch, yaw for forearm:", quaternion_to_rpy(quat_forearm))
 print("Roll, pitch, yaw for wrist:", quaternion_to_rpy(quat_wrist))
 print("Roll, pitch, yaw for hand:", quaternion_to_rpy(quat_hand))
+print("Roll, pitch, yaw for main support:", quaternion_to_rpy(quat_main_support))
 print("Roll, pitch, yaw for gripper left:", quaternion_to_rpy(quat_gripper_left))
 print("Roll, pitch, yaw for gripper right:", quaternion_to_rpy(quat_gripper_right))
 

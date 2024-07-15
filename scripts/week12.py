@@ -22,13 +22,13 @@ fixed_positions = {
     'joint_4': -1.48,
     'joint_5': -0.000,
     'joint_6': 0.901,
-    'left_clamp_joint': -0.004,
+    'left_clamp_joint': -0.00000,
     'right_clamp_joint': 0.00036
 }
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
-target_position = [0.00000, 0.20000, 0.1500]
+target_position = [0.00000, 0.20000, 0.1200]
 
 send_in_position = target_position
 target_angles = robot_chain.inverse_kinematics(send_in_position)
@@ -59,7 +59,7 @@ pids = {
     'joint_2': PIDController(100, 0.8, 100),
     'joint_3': PIDController(100, 0.06, 100),
     'joint_4': PIDController(180, 0.06, 100),
-    'joint_5': PIDController(100, 0.06, 100),
+    'joint_5': PIDController(100, 0.0001, 150),
     'joint_6': PIDController(162.5, 0.06, 100),
     'left_clamp_joint': PIDController(10, 0.0001, 5),
     'right_clamp_joint': PIDController(10, 0.0001, 5)
@@ -135,7 +135,7 @@ with viewer.launch_passive(model, data) as Viewer:
     Viewer.sync()
 
     # Simulation loop for synchronized movement
-    duration = 20  # seconds
+    duration = 10  # seconds
     steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
     tolerance = 0.01  # tolerance for joint position
     

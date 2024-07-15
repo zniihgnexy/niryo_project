@@ -118,3 +118,6 @@ plt.show()
 
 position_testify = robot_chain_2.forward_kinematics(angles_second)
 print("Position for the angles: ", position_testify)
+
+
+urdf_file_path = "niryo_arm.xml"

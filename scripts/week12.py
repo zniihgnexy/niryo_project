@@ -30,7 +30,7 @@ initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
 target_position = [0.1, 0.2, 0.2]
 
-send_in_position = target_position + np.array([0, 0, 0.05])
+send_in_position = target_position
 target_angles = robot_chain.inverse_kinematics(send_in_position)
 print("Target angles:", target_angles)
 
@@ -43,7 +43,7 @@ control_target_angles = target_angles[1:]
 print("Control target angles:", control_target_angles)
 
 # add two more angles to teh control target angles
-control_target_angles = np.append(control_target_angles, [0.000, 0.000])
+control_target_angles = np.append(control_target_angles, [0.00000, 0.00000])
 
 print("Control target angles:", control_target_angles)
 
@@ -62,11 +62,12 @@ pids = {
     'joint_4': PIDController(100, 0.06, 100),
     'joint_5': PIDController(100, 0.06, 100),
     'joint_6': PIDController(162.5, 0.06, 100),
-    'left_clamp_joint': PIDController(100, 0.06, 160),
-    'right_clamp_joint': PIDController(100, 0.06, 160)
+    'left_clamp_joint': PIDController(10, 0.0001, 5),
+    'right_clamp_joint': PIDController(10, 0.0001, 5)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
+position_updates = []
 
 # Function to control arm position
 def control_arm_to_position_with_thres(model, data, joint_names, joint_indices, pids, target_angles):
@@ -95,7 +96,8 @@ def control_arm_to_position(model, data, joint_names, joint_indices, pids, targe
         control_signal = pids[name].calculate(target_angle, current_position)
         
         # breakpoint()
-        print("cointrol signal", control_signal)
+        # if name == 'left_clamp_joint' or name == 'right_clamp_joint':
+            # print("cointrol signal", control_signal)
         data.ctrl[joint_index] = control_signal
         joint_angle_history[name].append(current_position)
 
@@ -115,8 +117,20 @@ def control_arm_to_position_gripper(model, data, joint_names, joint_indices, pid
         data.ctrl[joint_index] = control_signal
         joint_angle_history[name].append(current_position)
 
+def kinematic_test(model, data, joint_names, joint_indices, pids, target_angles):
+    for name in joint_names:
+        data_new = mujoco.MjData(model)
+        joint_index = joint_indices[name]
+        current_position = data.qpos[joint_index]
+        target_angle = target_angles[joint_indices[name]]
+        
+        data_new.qpos[joint_index] = target_angle
+        joint_angle_history[name].append(current_position)
+        mujoco.mj_kinematics(model, data_new)
+        print("new position", data_new.xpos)
 
 # Initialize the passive viewer
+# with viewer.launch(model, data) as Viewer:
 with viewer.launch_passive(model, data) as Viewer:
     Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 0
     Viewer.sync()
@@ -159,6 +173,8 @@ with viewer.launch_passive(model, data) as Viewer:
         # Update control signals for all joints at each step
         control_arm_to_position(model, data, joint_names, joint_indices, pids, control_target_angles)
         
+        position_updates.append(data.geom(9).xpos)
+        
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)  # Sleep to match the assumed simulation frequency
@@ -182,9 +198,13 @@ for name in joint_names:
     index = joint_indices[name]
     # print(f"Joint {data.geom(index).name} position: {data.geom(index).xpos}")
 
+
+# breakpoint()
 # Capture the final end-effector position
-end_position = [data.geom(6).xpos, data.geom(7).xpos]
+end_position = [data.geom(9).xpos, data.geom(8).xpos]
 print("Final end-effector position:", end_position)
 
 end_angles = [data.qpos[joint_indices[name]] for name in joint_names]
 print("Final joint angles:", end_angles)
+
+print("finsl position:", position_updates[-1])

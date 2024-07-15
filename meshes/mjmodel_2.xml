@@ -1,0 +1,65 @@
+<mujoco model="niryo_one">
+  <compiler angle="radian"/>
+  <asset>
+    <mesh name="base_link" file="base_link.stl"/>
+    <mesh name="shoulder_link" file="shoulder_link.stl"/>
+    <mesh name="arm_link" file="arm_link.stl"/>
+    <mesh name="elbow_link" file="elbow_link.stl"/>
+    <mesh name="forearm_link" file="forearm_link.stl"/>
+    <mesh name="wrist_link" file="wrist_link.stl"/>
+    <mesh name="hand_link" file="hand_link.stl"/>
+    <mesh name="g2_main_support" file="g2_main_support.stl"/>
+    <mesh name="g2_gear_left" file="g2_gear_left.stl"/>
+    <mesh name="g2_gear_right" file="g2_gear_right.stl"/>
+    <mesh name="g2_rod" file="g2_rod.stl"/>
+    <mesh name="g2_clamp" file="g2_clamp.stl"/>
+  </asset>
+  <worldbody>
+    <geom type="mesh" mesh="base_link"/>
+    <body name="shoulder_link" pos="0 0 0.103">
+      <joint name="joint_1" pos="0 0 0" axis="0 0 1" range="-3.05433 3.05433" actuatorfrcrange="-100 100"/>
+      <geom type="mesh" mesh="shoulder_link"/>
+      <body name="arm_link" pos="0 0 0.08" quat="0.5 0.5 -0.5 0.5">
+        <joint name="joint_2" pos="0 0 0" axis="0 0 1" range="-1.5708 0.640187" actuatorfrcrange="-100 100"/>
+        <geom type="mesh" mesh="arm_link"/>
+        <body name="elbow_link" pos="0.21 0 0" quat="0.707107 0 0 -0.707107">
+          <joint name="joint_3" pos="0 0 0" axis="0 0 1" range="-1.39749 1.5708" actuatorfrcrange="-100 100"/>
+          <geom type="mesh" mesh="elbow_link"/>
+          <body name="forearm_link" pos="0.0415 0.03 0" quat="0.707107 0 0.707107 0">
+            <joint name="joint_4" pos="0 0 0" axis="0 0 1" range="-3.05433 3.05433" actuatorfrcrange="-100 100"/>
+            <geom type="mesh" mesh="forearm_link"/>
+            <body name="wrist_link" pos="0 0 0.19" quat="0.707107 0 -0.707107 0">
+              <joint name="joint_5" pos="0 0 0" axis="0 0 1" range="-1.74533 1.91986" actuatorfrcrange="-100 100"/>
+              <geom type="mesh" mesh="wrist_link"/>
+              <body name="hand_link" pos="0.0164 -0.0055 0" quat="0.707107 0 0.707107 0">
+                <joint name="joint_6" pos="0 0 0" axis="0 0 1" range="-2.57436 2.57436" actuatorfrcrange="-100 100"/>
+                <geom type="mesh" mesh="hand_link"/>
+                <geom pos="0 0 0.0073" type="mesh" mesh="g2_main_support"/>
+                <body name="gripper" pos="0 0 0.0073" quat="1 0 0 0">
+                  <body name="g2_gear_left" pos="0.05769 0 0.000704">
+                    <joint name="left_gear_joint" type="slide" pos="0 0 0" axis="1 0 0"/>
+                    <geom type="mesh" mesh="g2_gear_left"/>
+                  </body>
+                  <body name="g2_gear_right" pos="-0.05769 0 0.000704">
+                    <joint name="right_gear_joint" type="slide" pos="0 0 0" axis="1 0 0"/>
+                    <geom type="mesh" mesh="g2_gear_right"/>
+                  </body>
+                  <!-- <geom pos="0.05769 0 0.000704" quat="0.843247 0 -0.537526 0" type="mesh" mesh="g2_gear_left"/> -->
+                  <!-- <geom pos="-0.05769 0 0.000704" quat="0.843247 0 0.537526 0" type="mesh" mesh="g2_gear_right"/> -->
+                  <body name="g2_clamp_left" pos="0.05769 0 0.000704">
+                    <joint name="left_clamp_joint" type="slide" pos="0 0 0" axis="1 0 0" range="-0.012 0" damping="0.1"/>
+                    <geom type="mesh" mesh="g2_clamp"/>
+                  </body>
+                  <body name="g2_clamp_right" pos="-0.05769 0 0.000704">
+                    <joint name="right_clamp_joint" type="slide" pos="0 0 0" axis="1 0 0" range="0 0.012" damping="0.1"/>
+                    <geom type="mesh" mesh="g2_clamp"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

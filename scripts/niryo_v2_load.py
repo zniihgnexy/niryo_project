@@ -21,7 +21,7 @@ for i in range(len(initial_angles)):
 print("this is the initial state", sim_MjData.qpos)
 
 
-import pdb; pdb.set_trace()
+# import pdb; pdb.set_trace()
 
 mujoco.mj_forward(model, sim_MjData)
 print("this is the new model", model)

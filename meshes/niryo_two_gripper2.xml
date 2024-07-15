@@ -1,0 +1,300 @@
+<?xml version="1.0"?>
+<robot name="niryo_one">
+    <!-- Base link -->
+    <link name="world">
+    </link>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <mesh filename="base_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="base_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Shoulder link -->
+    <link name="shoulder_link">
+        <visual>
+            <geometry>
+                <mesh filename="shoulder_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="shoulder_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Arm link -->
+    <link name="arm_link">
+        <visual>
+            <geometry>
+                <mesh filename="arm_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="arm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Elbow link -->
+    <link name="elbow_link">
+        <visual>
+            <geometry>
+                <mesh filename="elbow_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="elbow_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Forearm link -->
+    <link name="forearm_link">
+        <visual>
+            <geometry>
+                <mesh filename="forearm_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="forearm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Wrist link -->
+    <link name="wrist_link">
+        <visual>
+            <geometry>
+                <mesh filename="wrist_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="wrist_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Hand link -->
+    <link name="hand_link">
+        <visual>
+            <geometry>
+                <mesh filename="hand_link.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="hand_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Gripper 2 Components -->
+    <link name="g2_mainSupport_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_main_support.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_main_support.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_gearLeft_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_gear_left.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_gear_left.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_gearRight_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_gear_right.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_gear_right.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_rod_left_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_rod.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_rod.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_rod_right_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_rod.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_rod.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_clamp_left_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_clamp.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_clamp.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="g2_clamp_right_link">
+        <visual>
+            <geometry>
+                <mesh filename="g2_clamp.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="g2_clamp.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Joints definition -->
+    <joint name="joint_world" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="joint_1" type="revolute">
+        <parent link="base_link"/>
+        <child link="shoulder_link"/>
+        <origin xyz="0 0 0.103" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-3.05433" upper="3.05433"/>
+    </joint>
+
+    <joint name="joint_2" type="revolute">
+        <parent link="shoulder_link"/>
+        <child link="arm_link"/>
+        <origin xyz="0 0 0.08" rpy="1.57079632679 -1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-1.57080" upper="0.640187"/>
+    </joint>
+
+    <joint name="joint_3" type="revolute">
+        <parent link="arm_link"/>
+        <child link="elbow_link"/>
+        <origin xyz="0.21 0.0 0" rpy="0 0 -1.57079632679"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-1.397485" upper="1.57079632679"/>
+    </joint>
+
+    <joint name="joint_4" type="revolute">
+        <parent link="elbow_link"/>
+        <child link="forearm_link"/>
+        <origin xyz="0.0415 0.03 0" rpy="0 1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-3.05433" upper="3.05433"/>
+    </joint>
+
+    <joint name="joint_5" type="revolute">
+        <parent link="forearm_link"/>
+        <child link="wrist_link"/>
+        <origin xyz="0 0 0.19" rpy="0 -1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-1.74533" upper="1.91986"/>
+    </joint>
+
+    <joint name="joint_6" type="revolute">
+        <parent link="wrist_link"/>
+        <child link="hand_link"/>
+        <origin xyz="0.0164 -0.0055 0" rpy="0 1.57079632679 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="3.0" lower="-2.57436" upper="2.57436"/>
+    </joint>
+
+    <!-- Gripper 2 Joints -->
+    <!-- Joint connecting the hand link to the main support of gripper 2 -->
+    <joint name="joint_g2_mainSupport" type="fixed">
+        <parent link="hand_link"/>
+        <child link="g2_mainSupport_link"/>
+        <origin xyz="0 0 0.0073" rpy="0 0 0"/> <!-- Adjust the position accordingly -->
+    </joint>
+
+    <!-- Joints for Gripper 2 gears -->
+    <joint name="joint_g2_gearLeft" type="fixed">
+        <parent link="g2_mainSupport_link"/>
+        <child link="g2_gearLeft_link"/>
+        <origin xyz="0.05769 0 0.000704" rpy="0 -1.135 0"/>
+    </joint>
+
+    <joint name="joint_g2_gearRight" type="fixed">
+        <parent link="g2_mainSupport_link"/>
+        <child link="g2_gearRight_link"/>
+        <origin xyz="-0.05769 0 0.000704" rpy="0 1.135 0"/>
+    </joint>
+
+    <!-- Joints for Gripper 2 rods -->
+    <joint name="joint_g2_rodLeft" type="fixed">
+        <parent link="g2_mainSupport_link"/>
+        <child link="g2_rod_left_link"/>
+        <origin xyz="0.05 0.02 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="joint_g2_rodRight" type="fixed">
+        <parent link="g2_mainSupport_link"/>
+        <child link="g2_rod_right_link"/>
+        <origin xyz="-0.05 0.02 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Joints for Gripper 2 clamps -->
+    <joint name="joint_g2_clampLeft" type="fixed">
+        <parent link="g2_gearLeft_link"/>
+        <child link="g2_clamp_left_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <joint name="joint_g2_clampRight" type="fixed">
+        <parent link="g2_gearRight_link"/>
+        <child link="g2_clamp_right_link"/>
+        <origin xyz="0 0.026 0" rpy="0 0 3.14159"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+    
+</robot>

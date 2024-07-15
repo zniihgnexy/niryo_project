@@ -93,16 +93,16 @@ print("Inverse Kinematics Joint Angles 1:", ik_angles)
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-niryo_one_chain.plot(ik_angles, ax)    
-plt.show()
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# niryo_one_chain.plot(ik_angles, ax)    
+# plt.show()
 
 # loadlink from urdf file
 urdf_file_path = "niryo_robot.urdf"
 robot_chain_2 = Chain.from_urdf_file(urdf_file_path)
 
-target_position_2 = target_position + np.array([0.0, 0.0, 0.1])
+target_position_2 = target_position
 
 # breakpoint()
 

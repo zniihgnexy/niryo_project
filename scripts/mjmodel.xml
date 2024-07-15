@@ -14,14 +14,14 @@
     <mesh name="g1_clampRight" file="g1_clampRight.stl"/>
   </asset>
   <worldbody>
-    <body name="table" pos="0 0 0">
-      <geom name="table_top" type="box" size="0.5 0.5 0.05" pos="0 0 0.05" rgba="0.8 0.8 0.8 1"/>
-    </body>
     <geom pos="0 0 0.1" type="mesh" mesh="base_link"/>
-    <light name="overhead_light" dir="0 0 -1" diffuse="1 1 1" specular="0.5 0.5 0.5" pos="0 0 2"/>
+    <light name="overhead_light" pos="0 0 2" dir="0 0 -1" diffuse="1 1 1" specular="0.5 0.5 0.5"/>
+    <body name="table">
+      <geom name="table_top" size="0.5 0.5 0.05" pos="0 0 0.05" type="box" rgba="0.8 0.8 0.8 1"/>
+    </body>
     <body name="shoulder_link" pos="0 0 0.203">
       <inertial pos="0 0 0" mass="0.71142" diaginertia="0.0017 0.0017 0.0032"/>
-      <joint name="joint_1" axis="0 0 1" range="-2.949 2.949" actuatorfrcrange="-2 2"/>
+      <joint name="joint_1" pos="0 0 0" axis="0 0 1" range="-2.949 2.949" actuatorfrcrange="-2 2"/>
       <geom type="mesh" mesh="shoulder_link"/>
       <body name="arm_link" pos="0 0 0.08" quat="0.5 0.5 -0.5 0.5">
         <inertial pos="0 0 0" mass="1.0838" diaginertia="0.008194 0.0011945 0.007915"/>
@@ -44,17 +44,17 @@
                 <joint name="joint_6" pos="0 0 0" axis="0 0 1" range="-1.57436 1.57436" actuatorfrcrange="-0.5 0.5"/>
                 <geom type="mesh" mesh="hand_link"/>
                 <body name="g1_mainSupport_link" pos="0 0 0.0203" quat="0 1 0 0">
+                  <inertial pos="0 0 0" mass="0.04" diaginertia="3.9e-05 3.9e-05 6.7e-05"/>
                   <geom type="mesh" mesh="g1_mainSupport"/>
-                  <inertial pos="0 0 0" mass="0.04" diaginertia="0.000039 0.000039 0.000067"/>
-                  <body name="gripper_clamp_left" pos="0 0 0" quat="0 0 0 1">
+                  <site name="gripper_center" pos="0 0 0.0203" size="0.01" rgba="0 0 0 1"/>
+                  <body name="gripper_clamp_left" pos="0.007 0 0" quat="0 0 0 1">
                     <joint name="left_clamp_joint" pos="0 0 0" axis="1 0 0" type="slide" range="-0.012 0" actuatorfrcrange="-0.1 0.1"/>
                     <geom type="mesh" mesh="g1_clampLeft"/>
                   </body>
-                  <body name="gripper_clamp_right" pos="0 0 0" quat="0 0 0 1">
+                  <body name="gripper_clamp_right" pos="0.007 0 0" quat="0 0 0 1">
                     <joint name="right_clamp_joint" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.012" actuatorfrcrange="-0.1 0.1"/>
                     <geom type="mesh" mesh="g1_clampRight"/>
                   </body>
-                  <site name="gripper_center" pos="0 0 0.0203" size="0.01" rgba="0 0 0 1"/>
                 </body>
               </body>
             </body>
@@ -62,22 +62,22 @@
         </body>
       </body>
     </body>
-    <body name="ball" pos="-0.22 0.2 0.10">
-      <freejoint/>
-      <geom name="ball" type="sphere" size="0.015" rgba="0.65 0.81 0.55 1"/>
+    <body name="ball" pos="-0.22 0.2 0.1">
+      <joint type="free" limited="false" actuatorfrclimited="false"/>
+      <geom name="ball" size="0.015" rgba="0.65 0.81 0.55 1"/>
     </body>
   </worldbody>
   <actuator>
-    <position joint="joint_1"/>
-    <position joint="joint_2"/>
-    <position joint="joint_3"/>
-    <position joint="joint_4"/>
-    <position joint="joint_5"/>
-    <position joint="joint_6"/>
-    <position joint="left_clamp_joint"/>
-    <position joint="right_clamp_joint"/>
+    <general joint="joint_1" biastype="affine" biasprm="0 -1"/>
+    <general joint="joint_2" biastype="affine" biasprm="0 -1"/>
+    <general joint="joint_3" biastype="affine" biasprm="0 -1"/>
+    <general joint="joint_4" biastype="affine" biasprm="0 -1"/>
+    <general joint="joint_5" biastype="affine" biasprm="0 -1"/>
+    <general joint="joint_6" biastype="affine" biasprm="0 -1"/>
+    <general joint="left_clamp_joint" biastype="affine" biasprm="0 -1"/>
+    <general joint="right_clamp_joint" biastype="affine" biasprm="0 -1"/>
   </actuator>
   <sensor>
-    <touch name="touch" site="gripper_center"/>
+    <touch site="gripper_center" name="touch"/>
   </sensor>
 </mujoco>

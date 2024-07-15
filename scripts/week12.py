@@ -28,7 +28,7 @@ fixed_positions = {
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
-target_position = [0.00000, 0.20000, 0.1200]
+target_position = [0.00000, 0.20000, 0.1500]
 
 send_in_position = target_position
 target_angles = robot_chain.inverse_kinematics(send_in_position)
@@ -45,6 +45,20 @@ control_target_angles = target_angles[1:-2]
 # add two more angles to teh control target angles
 control_target_angles = np.append(control_target_angles, [0.00000, 0.00000])
 print("Control target angles:", control_target_angles)
+
+# move the arm to the target position, down a little bit
+stage_2_position = target_position - np.array([0.00000, 0.00000, 0.03000])
+
+target_2_angles = robot_chain.inverse_kinematics(stage_2_position)
+print("Target 2 angles:", target_2_angles)
+control_target_angles_2 = target_2_angles[1:-2]
+control_target_angles_2 = np.append(control_target_angles_2, [0.00000, 0.00000])
+print("Control target angles 2:", control_target_angles_2)
+
+
+#close the gripper
+target_3_angles = np.append(control_target_angles_2, [-0.12000, 0.12000])
+print("Target 3 angles:", target_3_angles)
 
 # breakpoint()
 
@@ -136,7 +150,11 @@ with viewer.launch_passive(model, data) as Viewer:
 
     # Simulation loop for synchronized movement
     duration = 10  # seconds
-    steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
+    stage_2_duration = 5
+    stage_3_duration = 5
+    steps_1 = int(duration * 50)  # Assuming 50 Hz simulation frequency
+    steps_2 = int(stage_2_duration * 50)
+    steps_3 = int(stage_3_duration * 50)
     tolerance = 0.01  # tolerance for joint position
     
     # Set initial joint positions
@@ -167,8 +185,8 @@ with viewer.launch_passive(model, data) as Viewer:
     #     time.sleep(0.02)
     
     
-    
-    for step in range(steps):
+    print("stage 1:")
+    for step in range(steps_1):
         # get the position of the ball
         ball_position = data.body(11).xipos
         # data.site(0).xpos = ball_position
@@ -199,6 +217,31 @@ with viewer.launch_passive(model, data) as Viewer:
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)  # Sleep to match the assumed simulation frequency
+    
+    print("ball position:", ball_position)
+    print("gripper position:", end_effector)
+    
+    print("stage two:")
+    for step in range(steps_2):
+        Viewer.sync()
+        control_arm_to_position(model, data, joint_names, joint_indices, pids, control_target_angles_2)
+        
+        end_effector = data.site(0).xpos
+        position_updates.append(end_effector)
+        
+        mujoco.mj_step(model, data)
+        time.sleep(0.02)
+    
+    print("stage three:")
+    for step in range(steps_3):
+        Viewer.sync()
+        control_arm_to_position_gripper(model, data, joint_names, joint_indices, pids, target_3_angles)
+        
+        end_effector = data.site(0).xpos
+        position_updates.append(end_effector)
+        
+        mujoco.mj_step(model, data)
+        time.sleep(0.02)
 
     print("All joints have moved towards their target positions.")
     print("ball position:", ball_position)

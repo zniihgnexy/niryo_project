@@ -102,7 +102,7 @@ from mpl_toolkits.mplot3d import Axes3D
 urdf_file_path = "niryo_robot.urdf"
 robot_chain_2 = Chain.from_urdf_file(urdf_file_path)
 
-target_position_2 = target_position
+target_position_2 = [0.2, 0.2, 0.1]  # Example target position
 
 # breakpoint()
 

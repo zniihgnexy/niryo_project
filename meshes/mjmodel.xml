@@ -54,7 +54,7 @@
                     <joint name="right_clamp_joint" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.012" actuatorfrcrange="-0.1 0.1"/>
                     <geom type="mesh" mesh="g1_clampRight"/>
                   </body>
-                  <site name="gripper_center" pos="0 0 0.0203" size="0.01" rgba="0 0 0 1"/>
+                  <site name="gripper_center" pos="0 0 -0.0453" size="0.01" rgba="0 0 0 1"/>
                 </body>
               </body>
             </body>

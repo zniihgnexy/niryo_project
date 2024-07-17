@@ -1,6 +1,6 @@
 <mujoco model="niryo_one">
   <compiler angle="radian"/>
-  <option timestep="0.005" gravity="0 0 0"/>
+  <option timestep="0.005" gravity="0 0 -9.8"/>
   <asset>
     <mesh name="base_link" file="base_link.stl"/>
     <mesh name="shoulder_link" file="shoulder_link.stl"/>
@@ -39,7 +39,7 @@
               <inertial pos="0 0 0" mass="0.22126" diaginertia="0.0015 0.0015 0.0015"/>
               <joint name="joint_5" pos="0 0 0" axis="0 0 1" range="-1.04533 0.2397" actuatorfrcrange="-0.5 0.5"/>
               <geom type="mesh" mesh="wrist_link"/>
-              <body name="hand_link" pos="0.0164 -0.0055 0" quat="0.707107 0 0.707107 0">
+              <body name="hand_link" pos="0.0164 0 0" quat="0.707107 0 0.707107 0">
                 <inertial pos="0 0 0" mass="0.0070027" diaginertia="0.0015 0.0015 0.0015"/>
                 <joint name="joint_6" pos="0 0 0" axis="0 0 1" range="-1.57436 1.57436" actuatorfrcrange="-0.5 0.5"/>
                 <geom type="mesh" mesh="hand_link"/>

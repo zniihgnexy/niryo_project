@@ -1,6 +1,6 @@
 <mujoco model="niryo_one">
   <compiler angle="radian"/>
-  <option timestep="0.005" gravity="0 0 -9.8"/>
+  <option timestep="0.005" gravity="0 0 0"/>
   <asset>
     <mesh name="base_link" file="base_link.stl"/>
     <mesh name="shoulder_link" file="shoulder_link.stl"/>

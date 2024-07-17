@@ -5,7 +5,7 @@ from mujoco import viewer
 import matplotlib.pyplot as plt
 from pid_controller import PIDController
 from kinemetic import robot_chain
-from forward_kinematic import RobotArm
+# from forward_kinematic import RobotArm
 
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
@@ -17,25 +17,24 @@ joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6',
 joint_indices = {name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name) for name in joint_names}
 
 fixed_positions = {
-    'joint_1': 0.00369,
-    'joint_2': -0.0135,
-    'joint_3': -0.511,
-    'joint_4': -1.48,
-    'joint_5': -0.000,
-    'joint_6': 0.901,
-    'left_clamp_joint': -0.00000,
-    'right_clamp_joint': 0.00036
+    'joint_1': 1,
+    'joint_2': 0,
+    'joint_3': 0,
+    'joint_4': 0,
+    'joint_5': 0,
+    'joint_6': 0,
+    'left_clamp_joint': 0,
+    'right_clamp_joint': 0
 }
-
 target_angles = {
-    'joint_1': 0.0000,
-    'joint_2': -0.0135,
-    'joint_3': -0.511,
-    'joint_4': -1.48,
-    'joint_5': -0.000,
-    'joint_6': 0.901,
-    'left_clamp_joint': -0.00000,
-    'right_clamp_joint': 0.00036
+    'joint_1': 0,
+    'joint_2': 0,
+    'joint_3': 0,
+    'joint_4': 0,
+    'joint_5': 0,
+    'joint_6': 0,
+    'left_clamp_joint': 0,
+    'right_clamp_joint': 0
 }
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
@@ -122,7 +121,7 @@ with viewer.launch_passive(model, data) as Viewer:
     Viewer.sync()
 
     # Simulation loop for synchronized movement
-    duration = 10  # seconds
+    duration = 5  # seconds
     # stage_2_duration = 5
     # stage_3_duration = 5
     steps_1 = int(duration * 50)  # Assuming 50 Hz simulation frequency
@@ -130,11 +129,17 @@ with viewer.launch_passive(model, data) as Viewer:
     # steps_3 = int(stage_3_duration * 50)
     tolerance = 0.01  # tolerance for joint position
     
+    # breakpoint()
+    
     # Set initial joint positions
     for name, angle in fixed_positions.items():
         joint_index = joint_indices[name]
         data.qpos[joint_index] = angle
         # print("initial angles:", joint_index, angle)
+        
+    print("joint position:", model.jnt_pos)
+    
+    # breakpoint()
     
     Viewer.sync()
     time.sleep(0.02)
@@ -144,10 +149,22 @@ with viewer.launch_passive(model, data) as Viewer:
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)
+    
+    print("joint position:", data.xpos)
         
-    print("joint 6 end effector position:", data.geom(8).xpos)
-    print("position of the center of the gripper:", data.site_xpos[0])
-    print("distance between the gripper and the end effector:", np.linalg.norm(data.geom(8).xpos - data.site_xpos[0]))
+    center_gripper_pos = (data.geom(10).xpos + data.geom(9).xpos) / 2
+    print("middle gripper geom z axis position:", center_gripper_pos)
+    
+    print("joint 6 geom position:", data.geom(7).xpos)
+    print("supporter geom position:", data.geom(8).xpos)
+    
+    print("position of site:", data.site_xpos[0])
+    # print("distance between the gripper and the end effector:", np.linalg.norm(data.geom(8).xpos - data.site_xpos[0]))
+    
+    joint_6_xpos = data.xpos[7]
+    supporter_xpos = data.xpos[8]
+    site_xpos = data.site_xpos[0]
+    print("distance between joint 6 and the end effector:", np.linalg.norm(joint_6_xpos - site_xpos))
 
 
 

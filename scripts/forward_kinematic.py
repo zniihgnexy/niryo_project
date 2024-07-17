@@ -36,12 +36,12 @@ class RobotArm:
     def __init__(self, gripper_length=0.1):  # default gripper length
         self.gripper_length = gripper_length
         self.dh_params = [
-            {'theta': 0, 'd': 0.03, 'a': 0, 'alpha': np.pi/2},
-            {'theta': -np.pi/2, 'd': 0, 'a': 0.08, 'alpha': 0},
-            {'theta': 0, 'd': 0, 'a': 0.21, 'alpha': np.pi/2},
-            {'theta': np.pi/2, 'd': 0.0415, 'a': 0.03, 'alpha': -np.pi/2},
-            {'theta': -np.pi/2, 'd': 0, 'a': 0.19, 'alpha': np.pi/2},
-            {'theta': np.pi/2, 'd': 0.0164, 'a': 0, 'alpha': 0},
+            {'theta': 0, 'd': 0.103, 'a': 0, 'alpha': 0},
+            {'theta': -np.pi/2, 'd': 0.08, 'a': 0, 'alpha': -np.pi/2},
+            {'theta': 0, 'd': 0, 'a': 0.21, 'alpha': 0},
+            {'theta': np.pi/2, 'd': 0.0415, 'a': 0, 'alpha': np.pi/2},
+            {'theta': -np.pi/2, 'd': 0.19, 'a': 0, 'alpha': -np.pi/2},
+            {'theta': np.pi/2, 'd': 0, 'a': 0.0164, 'alpha': np.pi/2},
         ]
 
     def forward_kinematics(self, joint_angles):

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def dh_transform(theta, d, a, alpha):
     """
@@ -22,8 +23,8 @@ def jacobian(dh_params, joint_angles):
     T = np.eye(4)
     T_i = [T]  # Store transformations for each joint
 
-    for i, params in enumerate(dh_params):
-        T = T @ dh_transform(joint_angles[i], **params)
+    for i, (params, angle) in enumerate(zip(dh_params, joint_angles)):
+        T = T @ dh_transform(angle + params['theta_adjustment'], params['d'], params['a'], params['alpha'])
         T_i.append(T)
 
     T_end = T_i[-1]  # Final transformation matrix
@@ -43,24 +44,22 @@ class RobotArm:
         self.joint_ranges = joint_ranges
         self.gripper_length = gripper_length
         self.dh_params = [
-            {'d': 0.203, 'a': 0, 'alpha': 0},  # Base to Shoulder: translation along z of 0.103m, no rotation about common normal (x-axis)
-            {'d': 0.08, 'a': 0, 'alpha': np.pi/2},  # Shoulder to Arm: translation along x of 0.08m, rotation of +pi/2 about x-axis
-            {'d': 0, 'a': 0.21, 'alpha': 0},  # Arm to Elbow: translation along x of 0.21m, no twist
-            {'d': 0, 'a': 0.0415, 'alpha': -np.pi/2},  # Elbow to Forearm: translation along x of 0.0415m, rotation of -pi/2 about x-axis
-            {'d': 0.19, 'a': 0, 'alpha': np.pi/2},  # Forearm to Wrist: translation along z of 0.19m, rotation of +pi/2 about x-axis
-            {'d': 0, 'a': 0.0164, 'alpha': 0},  # Wrist to Hand: translation along x of 0.0164m, no twist
-            {'d': 0.0, 'a': 0, 'alpha': -np.pi}  # Additional fixed joint: translation along z of 0.0203m, rotation of -pi about x-axis (effectively flipping direction)
+            {'theta_adjustment': 0, 'd': 0.08, 'a': 0, 'alpha': -np.pi/2},  # Base to Shoulder
+            {'theta_adjustment': -np.pi/2, 'd': 0, 'a': 0.21, 'alpha': np.pi},  # Shoulder to Arm
+            {'theta_adjustment': np.pi, 'd': 0, 'a': 0.0415, 'alpha': np.pi/2},  # Arm to Elbow
+            {'theta_adjustment': 0, 'd': 0.19, 'a': 0, 'alpha': -np.pi/2},  # Elbow to Forearm
+            {'theta_adjustment': 0, 'd': 0, 'a': 0.0164, 'alpha': np.pi/2},  # Forearm to Wrist
+            {'theta_adjustment': np.pi, 'd': 0.0203, 'a': 0, 'alpha': 0}  # Wrist to Hand
         ]
-
 
     def forward_kinematics(self, joint_angles):
         T = np.eye(4)
         positions = [T[:3, 3]]  # Starting position at the base
         for i, (params, angle) in enumerate(zip(self.dh_params, joint_angles)):
-            T_next = dh_transform(angle, **params)
+            T_next = dh_transform(angle + params['theta_adjustment'], params['d'], params['a'], params['alpha'])
             T = T @ T_next
-            positions.append(T[:3, 3])  # Store the position of the end of each joint
-        return T, np.array(positions)
+            positions.append(T[:3, 3].copy())  # Store the position of the end of each joint
+        return T, positions
 
     def inverse_kinematics(self, target_position, initial_angles=None, tolerance=1e-5, max_iterations=500):
         joint_angles = np.array(initial_angles if initial_angles is not None else [0] * len(self.dh_params), dtype=np.float64)
@@ -100,7 +99,7 @@ class RobotArm:
         """
         Get the end effector's orientation in terms of Euler angles (roll, pitch, yaw)
         """
-        T = self.forward_kinematics(joint_angles)
+        T, _ = self.forward_kinematics(joint_angles)
         R = T[:3, :3]
         return self.rotation_matrix_to_euler_angles(R)
 
@@ -115,9 +114,9 @@ joint_ranges = np.array([
 ])
 
 robot = RobotArm(joint_ranges, gripper_length=0)
-initial_angles = [1, 0, 0, 0, 0, 0, 0]
+initial_angles = [0, 0, 0, 0, 0, 0]  # All angles are set to zero
 
-# joint 6 joint position, correct version test
+# Joint 6 joint position, correct version test
 target_position = np.array([0.15828916, 0.00081683, 0.19676705])
 try:
     calculated_angles = robot.inverse_kinematics(target_position, initial_angles)
@@ -125,13 +124,26 @@ try:
 except ValueError as e:
     print(e)
 
-target_angles = [0.00369, -0.0135, -0.511, -1.48, -0.000, 0.901, 0]
-T, joint_positions  = robot.forward_kinematics(initial_angles)
+target_angles = [0.00369, -0.0135, -0.511, -1.48, -0.000, 0.901]
+T, joint_positions  = robot.forward_kinematics(target_angles)
 print("End-Effector Position:", joint_positions)
 
-# euler_angles = robot.get_end_effector_orientation(target_angles)
-# print("End-Effector Orientation (Euler angles):", euler_angles)
+# Euler angles for the end effector orientation
+euler_angles = robot.get_end_effector_orientation(target_angles)
+print("End-Effector Orientation (Euler angles):", euler_angles)
 
-# gripper_length = 0.0656
-# gripper_shift = np.array([gripper_length*np.cos(euler_angles[2]), gripper_length*np.sin(euler_angles[2]), 0])
-# print("Gripper Position:", forward_kinematics[:3, 3] + gripper_shift)
+# Plotting the robot structure
+def plot_robot_structure(joint_positions):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
+    joint_positions = np.array(joint_positions)
+    ax.plot(joint_positions[:, 0], joint_positions[:, 1], joint_positions[:, 2], '-o', color='blue')
+    
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    
+    plt.show()
+
+plot_robot_structure(joint_positions)

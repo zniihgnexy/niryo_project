@@ -108,7 +108,7 @@ def control_arm_to_position(model, data, joint_names, joint_indices, pids, targe
 
         control_signal = pids[name].calculate(target_angle, current_position)
         
-        breakpoint()
+        # breakpoint()
         # if name == 'left_clamp_joint' or name == 'right_clamp_joint':
             # print("cointrol signal", control_signal)
         data.ctrl[joint_index] = control_signal

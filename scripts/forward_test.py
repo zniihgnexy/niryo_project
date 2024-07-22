@@ -20,7 +20,7 @@ fixed_positions = {
     'joint_1': 1,
     'joint_2': 0,
     'joint_3': 0,
-    'joint_4': 0,
+    'joint_4': 1,
     'joint_5': 0,
     'joint_6': 0,
     'left_clamp_joint': 0,

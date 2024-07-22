@@ -12,6 +12,16 @@ model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
 model = mujoco.MjModel.from_xml_path(model_path)
 data = mujoco.MjData(model)
 
+# Get the ID of the ball body
+ball_body_id = model.body('ball').id
+
+# Function to get the position of the ball
+def get_ball_position(data, body_id):
+    return data.body(body_id).xpos
+
+ball_position = get_ball_position(data, ball_body_id)
+print("Initial ball position:", ball_position)
+
 # Joint names and initialization
 joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6', 'left_clamp_joint', 'right_clamp_joint']
 joint_indices = {name: mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name) for name in joint_names}
@@ -29,7 +39,7 @@ fixed_positions = {
 
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
-target_position = [0.20000, 0.15000, 0.2000]
+# target_position = [0.10000, 0.20000, 0.2000]
 
 # Define the inverse kinematics class using gradient descent
 
@@ -39,7 +49,6 @@ body_id = model.body('hand_link').id  # end-effector ID
 site_id = model.site('gripper_center').id  # target site ID
 jacp = np.zeros((3, model.nv))  # Translational Jacobian
 jacr = np.zeros((3, model.nv))  # Rotational Jacobian
-goal = target_position  # Desired position
 step_size = 0.01
 tol = 0.001
 alpha = 0.5
@@ -47,13 +56,12 @@ init_q = initialize_angles
 
 movable_joints_indices = [joint_indices[joint_name] for joint_name in joint_names[:]]  # Exclude clamp joints
 
-ik = GradientDescentIK(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices)
-ik_lm = LevenbergMarquardtIK(model, data, step_size, tol, alpha, 0.1, movable_joints_indices)
-
-# Get desired joint angles using inverse kinematics
-# target_angles = ik.calculate(goal, init_q, body_id)
-target_angles = ik.calculate(target_position, initialize_angles[:8], model.body('hand_link').id)
-print("Target angles:", target_angles)
+def get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices):
+    ik = GradientDescentIK(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices)
+    ik_lm = LevenbergMarquardtIK(model, data, step_size, tol, alpha, 0.1, movable_joints_indices)    
+    target_angles = ik.calculate(target_position, initialize_angles[:8], body_id)
+    print("Target angles:", target_angles)
+    return target_angles
 
 # breakpoint()
 
@@ -88,7 +96,13 @@ def control_arm_to_position(model, data, joint_names, joint_indices, pids, targe
 with viewer.launch_passive(model, data) as Viewer:
     Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 0
     Viewer.sync()
+    ball_position = get_ball_position(data, ball_body_id)
+    print("Initial ball position:", ball_position)
+    target_position = ball_position + np.array([-0.02, 0, 0.07])
+    print("target position:", target_position)
+    target_angles = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
 
+    breakpoint()
     # Simulation parameters
     duration = 10  # seconds
     steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
@@ -138,7 +152,7 @@ for idx, name in enumerate(joint_names):
     ax.set_ylabel('Angle (rad)')
 
 plt.tight_layout()
-plt.show()
+# plt.show()
 
 # Print final joint angles
 end_angles = [data.qpos[joint_indices[name]] for name in joint_names]

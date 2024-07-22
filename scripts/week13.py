@@ -1,3 +1,4 @@
+import math
 import mujoco
 import numpy as np
 import time
@@ -45,7 +46,7 @@ initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
 
 # Initialize variables for inverse kinematics
-body_id = model.body('hand_link').id  # end-effector ID
+body_id = model.body('g1_mainSupport_link').id  # end-effector ID
 site_id = model.site('gripper_center').id  # target site ID
 jacp = np.zeros((3, model.nv))  # Translational Jacobian
 jacr = np.zeros((3, model.nv))  # Rotational Jacobian
@@ -91,6 +92,9 @@ def control_arm_to_position(model, data, joint_names, joint_indices, pids, targe
         joint_angle_history[name].append(current_position)
     
     position_updates.append(data.site(site_id).xpos)
+    
+
+FLAG = 0
 
 # Simulation loop for synchronized movement
 with viewer.launch_passive(model, data) as Viewer:
@@ -98,14 +102,18 @@ with viewer.launch_passive(model, data) as Viewer:
     Viewer.sync()
     ball_position = get_ball_position(data, ball_body_id)
     print("Initial ball position:", ball_position)
-    target_position = ball_position + np.array([-0.02, 0, 0.07])
+    target_position = ball_position + np.array([0, 0, 0.05])
     print("target position:", target_position)
-    target_angles = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
-
-    breakpoint()
+    target_angles_onball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
+    target_position = ball_position + np.array([0, 0, 0.01])
+    target_angles_2ball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
+    
+    # breakpoint()
     # Simulation parameters
     duration = 10  # seconds
-    steps = int(duration * 50)  # Assuming 50 Hz simulation frequency
+    steps_1 = int(10 * 50)
+    steps_2 = int(10 * 50)
+    steps_3 = int(10 * 50)
 
     # Set initial joint positions
     for name, angle in fixed_positions.items():
@@ -116,9 +124,10 @@ with viewer.launch_passive(model, data) as Viewer:
     time.sleep(0.02)
 
     print("Starting simulation...")
-    for step in range(steps):
+    print("Step 1: Move towards the ball")
+    for step in range(steps_1):
         # Update control signals for all joints at each step
-        control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles)
+        control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles_onball)
         
         end_effector = data.body(body_id).xpos
         # position_updates.append(end_effector)
@@ -126,6 +135,42 @@ with viewer.launch_passive(model, data) as Viewer:
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)  # Sleep to match the assumed simulation frequency
+        
+    
+    print("Step 2: moving down")
+    for step in range(steps_2):
+        # Update control signals for all joints at each step
+        control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles_2ball)
+        
+        end_effector = data.body(body_id).xpos
+        # position_updates.append(end_effector)
+        
+        # breakpoint()
+        
+        error_tolerance = math.sqrt((end_effector[0] - target_position[0])**2 + (end_effector[1] - target_position[1])**2 + (end_effector[2] - target_position[2])**2)
+        
+        if FLAG == 0 and error_tolerance < 0.02:
+            FLAG = 1
+            print("Ball is picked up")
+
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
+    
+    print("Step 3: close the gripper\n")
+    for step in range(steps_3):
+        # Update control signals for all joints at each step
+        data.ctrl[joint_indices['left_clamp_joint']] = 0.1
+        data.ctrl[joint_indices['right_clamp_joint']] = 0.1
+        
+        end_effector = data.body(body_id).xpos
+        # position_updates.append(end_effector)
+        # update the ball position in the simulation
+        data.body(ball_body_id).xpos = end_effector
+        
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
 
     print("All joints have moved towards their target positions.")
     print("End-effector final position:", end_effector)

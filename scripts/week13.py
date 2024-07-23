@@ -77,8 +77,8 @@ pids = {
     'joint_4': PIDController(180, 0.06, 100),
     'joint_5': PIDController(100, 0.0001, 100),
     'joint_6': PIDController(162.5, 0.06, 100),
-    'left_clamp_joint': PIDController(10, 0.5, 20),
-    'right_clamp_joint': PIDController(10, 0.5, 20)
+    'left_clamp_joint': PIDController(10, 0.05, 5),
+    'right_clamp_joint': PIDController(10, 0.05, 5)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
@@ -101,14 +101,16 @@ def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, p
         if name == 'left_clamp_joint':
             joint_index = joint_indices[name]
             current_position = data.qpos[joint_index]
-            target_angle = -0.0085
+            # -0.012 is the middle
+            target_angle = -0.00500
             control_signal = pids[name].calculate(target_angle, current_position)
             data.qpos[joint_index] = target_angle
             joint_angle_history[name].append(current_position)
         elif name == 'right_clamp_joint':
             joint_index = joint_indices[name]
             current_position = data.qpos[joint_index]
-            target_angle = 0.0085
+            # 0.012 is the middle
+            target_angle = 0.005050
             control_signal = pids[name].calculate(target_angle, current_position)
             data.qpos[joint_index] = target_angle
             joint_angle_history[name].append(current_position)
@@ -125,15 +127,6 @@ def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, p
 def has_contact(data, sensor_name):
     sensor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, sensor_name)
     return data.sensor(sensor_id).data[0] > 0 
-
-def control_gripper(data, joint_indices, close=False):
-    # Adjust gripper joints based on whether closing or opening
-    if close:
-        data.ctrl[joint_indices['left_clamp_joint']] = -0.06  # Adjust as needed to effectively close
-        data.ctrl[joint_indices['right_clamp_joint']] = 0.06
-    else:
-        data.ctrl[joint_indices['left_clamp_joint']] = 0  # Stop moving gripper
-        data.ctrl[joint_indices['right_clamp_joint']] = 0
 
 # Improved stage 3 to lift the ball
 def lift_to_new_position(model, data, initial_position, lift_height, joint_indices, body_id, steps):
@@ -155,15 +148,15 @@ with viewer.launch_passive(model, data) as Viewer:
     target_position = ball_position + np.array([0, 0, 0.05])
     print("target position:", target_position)
     target_angles_onball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
-    target_position = ball_position + np.array([-0.001, 0.001, 0.015])
+    target_position = ball_position + np.array([-0.005, 0.001, 0.015])
     target_angles_2ball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     for name, angle in fixed_positions.items():
         # change the values of joint 6
         if name == 'joint_6':
-            fixed_positions[name] = -0.1
+            fixed_positions[name] = -0.10000
     print("target_angles_2ball:", target_angles_2ball)
     
-    list_position = ball_position + np.array([0, 0, 0.15])
+    list_position = [0.23, -0.15, 0.30]
     target_angles_lift = get_target_angles(model, data, list_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     print("target_angles_oripos:", target_angles_lift)
     
@@ -173,6 +166,7 @@ with viewer.launch_passive(model, data) as Viewer:
     steps_1 = int(10 * 50)
     steps_2 = int(10 * 50)
     steps_3 = int(10 * 50)
+    steps_4 = int(10 * 50)
 
     # Set initial joint positions
     for name, angle in fixed_positions.items():
@@ -218,6 +212,18 @@ with viewer.launch_passive(model, data) as Viewer:
     for step in range(steps_3):
         
         control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_2ball)
+        
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
+
+    print("Step 4: lift the ball")
+    for step in range(steps_4):
+        control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_lift)
+        
+        end_effector = data.body(body_id).xpos
+        
+        data.body("box").xpos = end_effector
         
         mujoco.mj_step(model, data)
         Viewer.sync()

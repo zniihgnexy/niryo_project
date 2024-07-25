@@ -4,7 +4,7 @@ import numpy as np
 import time
 from mujoco import viewer
 import matplotlib.pyplot as plt
-from pid_controller import PIDController
+from pid_controller import PIDController, PIDControllerWithDerivativeFilter
 from GradientDescentIK import GradientDescentIK
 from LevenbergMarquardtIK import LevenbergMarquardtIK
 
@@ -76,13 +76,30 @@ pids = {
     'joint_3': PIDController(100, 0.06, 100),
     'joint_4': PIDController(180, 0.06, 100),
     'joint_5': PIDController(100, 0.0001, 100),
-    'joint_6': PIDController(162.5, 0.06, 100),
-    'left_clamp_joint': PIDController(10, 0.05, 50),
-    'right_clamp_joint': PIDController(10, 0.05, 50)
+    'joint_6': PIDControllerWithDerivativeFilter(162.5, 0.06, 100),
+    'left_clamp_joint': PIDControllerWithDerivativeFilter(10, 0.05, 50),
+    'right_clamp_joint': PIDControllerWithDerivativeFilter(10, 0.05, 50)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
 position_updates = []
+
+def soft_start_control(current_position, target_position, step_size, max_increment):
+    # Calculate incremental step
+    direction = np.sign(target_position - current_position)
+    increment = direction * min(step_size, abs(target_position - current_position), max_increment)
+    return current_position + increment
+
+def compute_feedforward(target_position, dynamic_parameters):
+    # Placeholder for a dynamic model or empirical data
+    # For simplicity, just return a fraction of the target position
+    return 0.1 * target_position
+
+def control_with_feedforward(pid, target_position, current_position):
+    feedforward_value = compute_feedforward(target_position, {})
+    pid_output = pid.calculate(target_position - current_position)
+    return current_position + pid_output + feedforward_value
+
 
 # Function to control arm position
 def control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles):
@@ -96,22 +113,24 @@ def control_arm_to_position(model, data, joint_names, joint_indices, pids, targe
     
     position_updates.append(data.site(site_id).xpos)
 
-def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles, step_size=0.001):
+def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles, step_size=0.001, max_increment=0.0005):
     for name in joint_names:
         joint_index = joint_indices[name]
         current_position = data.qpos[joint_index]
         
         if name in ['left_clamp_joint', 'right_clamp_joint']:
-            # Slowly move the gripper towards the target position
-            target_position = -0.0051 if name == 'left_clamp_joint' else 0.0051
-            new_position = current_position + (target_position - current_position) * step_size
-            # Ensure the gripper doesn't close beyond the target position
-            new_position = max(min(new_position, target_position), -0.012 if name == 'left_clamp_joint' else 0)
+            target_position = -0.0051 if name == 'left_clamp_joint' else 0.00515
+            new_position = soft_start_control(current_position, target_position, step_size, max_increment)
+            control_signal = pids[name].calculate(new_position, current_position)
+            # keep the exact same position as before
+            # data.ctrl[joint_index] = 0
+            # continue
         else:
-            # For other joints, use the target angles as before
             target_position = target_angles[joint_indices[name]]
+            new_position = soft_start_control(current_position, target_position, step_size, max_increment)
+            control_signal = pids[name].calculate(target_position, current_position)
 
-        control_signal = pids[name].calculate(target_position, current_position)
+        # control_signal = pids[name].calculate(new_position, current_position)
         data.ctrl[joint_index] = control_signal
         joint_angle_history[name].append(current_position)
     
@@ -131,6 +150,16 @@ def lift_to_new_position(model, data, initial_position, lift_height, joint_indic
     Viewer.sync()
     return target_angles
 
+def set_mocap_position(model, data, body_name, position):
+    """Set the position of a mocap body."""
+    body_idx = model.body(name=body_name).id
+    mocap_idx = model.body_mocapid[body_idx]
+    if mocap_idx == -1:
+        raise ValueError("Body is not a mocap body or does not exist.")
+    
+    # Set the position
+    data.mocap_pos[mocap_idx][:] = np.array(position)
+
 FLAG = 0
 
 # Simulation loop for synchronized movement
@@ -140,11 +169,11 @@ with viewer.launch_passive(model, data) as Viewer:
     ball_position = get_ball_position(data, ball_body_id)
     print("Initial ball position:", ball_position)
     
-    target_position = ball_position + np.array([0, 0, 0.05])
+    target_position = ball_position + np.array([0, 0, 0.05]) + np.array([0, 0, 0.05])
     print("target position:", target_position)
     target_angles_onball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     
-    target_position = ball_position + np.array([-0.005, 0.001, 0.015])
+    target_position = ball_position + np.array([-0.005, 0.001, 0.01]) + np.array([0, 0, 0.05])
     target_angles_2ball = get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     for name, angle in fixed_positions.items():
         # change the values of joint 6
@@ -181,7 +210,7 @@ with viewer.launch_passive(model, data) as Viewer:
         # Update control signals for all joints at each step
         control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles_onball)
         
-        end_effector = data.body(body_id).xpos
+        end_effector = data.site(site_id).xpos
         # position_updates.append(end_effector)
         
         mujoco.mj_step(model, data)
@@ -212,6 +241,12 @@ with viewer.launch_passive(model, data) as Viewer:
         # Call the modified function with a small step size for a gradual close
         control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_2ball, step_size=0.01)
         
+        if FLAG == 1:
+            end_effector = data.site(site_id).xpos
+            mocap_pos = end_effector
+            set_mocap_position(model, data, "box", mocap_pos)
+            Viewer.sync()
+        
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)
@@ -220,9 +255,11 @@ with viewer.launch_passive(model, data) as Viewer:
     for step in range(steps_4):
         control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_lift)
         
-        end_effector = data.body(body_id).xpos
-        
-        data.body("box").xpos = end_effector
+        if FLAG == 1:
+            end_effector = data.site(site_id).xpos
+            mocap_pos = end_effector
+            set_mocap_position(model, data, "box", mocap_pos)
+            Viewer.sync()
         
         mujoco.mj_step(model, data)
         Viewer.sync()

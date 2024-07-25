@@ -1,6 +1,6 @@
 <mujoco model="niryo_one">
   <compiler angle="radian"/>
-  <option timestep="0.005" gravity="0 0 -9.8" noslip_iterations="3" integrator="implicit"/>
+  <option timestep="0.005" gravity="0 0 -9.8" noslip_iterations="5" solver="Newton"/>
   <asset>
     <mesh name="base_link" file="base_link.stl"/>
     <mesh name="shoulder_link" file="shoulder_link.stl"/>
@@ -25,11 +25,11 @@
       <geom type="mesh" mesh="shoulder_link"/>
       <body name="arm_link" pos="0 0 0.08" quat="0.5 0.5 -0.5 0.5">
         <inertial pos="0 0 0" mass="1.0838" diaginertia="0.008194 0.0011945 0.007915"/>
-        <joint name="joint_2" pos="0 0 0" axis="0 0 1" range="-1.83 0.61" actuatorfrcrange="-2.5 2.5"/>
+        <joint name="joint_2" pos="0 0 0" axis="0 0 1" range="-1.83 0.61" actuatorfrcrange="-3 3"/>
         <geom type="mesh" mesh="arm_link"/>
         <body name="elbow_link" pos="0.21 0 0" quat="0.707107 0 0 -0.707107">
           <inertial pos="0 0 0" mass="0.22126" diaginertia="0.0011754 0.0020851 0.0022753"/>
-          <joint name="joint_3" pos="0 0 0" axis="0 0 1" range="-1.34 1.57" actuatorfrcrange="-1 1"/>
+          <joint name="joint_3" pos="0 0 0" axis="0 0 1" range="-1.34 1.57" actuatorfrcrange="-3 3"/>
           <geom type="mesh" mesh="elbow_link"/>
           <body name="forearm_link" pos="0.0415 0.03 0" quat="0.707107 0 0.707107 0">
             <inertial pos="0 0 0" mass="0.35686" diaginertia="0.0013664 0.0014781 0.00023715"/>
@@ -37,24 +37,24 @@
             <geom type="mesh" mesh="forearm_link"/>
             <body name="wrist_link" pos="0 0 0.19" quat="0.707107 0 -0.707107 0">
               <inertial pos="0 0 0" mass="0.22126" diaginertia="0.0015 0.0015 0.0015"/>
-              <joint name="joint_5" pos="0 0 0" axis="0 0 1" range="-1.04533 0.2397" actuatorfrcrange="-0.5 0.5"/>
+              <joint name="joint_5" pos="0 0 0" axis="0 0 1" range="-1.04533 0.2397" actuatorfrcrange="-2 2"/>
               <geom type="mesh" mesh="wrist_link"/>
               <body name="hand_link" pos="0.0164 -0.0055 0" quat="0.707107 0 0.707107 0">
                 <inertial pos="0 0 0" mass="0.0070027" diaginertia="0.0015 0.0015 0.0015"/>
-                <joint name="joint_6" pos="0 0 0" axis="0 0 1" range="-1.57436 1.57436" actuatorfrcrange="-0.5 0.5"/>
+                <joint name="joint_6" pos="0 0 0" axis="0 0 1" range="-1.57436 1.57436" actuatorfrcrange="-1 1"/>
                 <geom type="mesh" mesh="hand_link"/>
                 <body name="g1_mainSupport_link" pos="0 0 0.0203" quat="0 1 0 0">
                   <geom type="mesh" mesh="g1_mainSupport"/>
                   <inertial pos="0 0 0" mass="0.04" diaginertia="0.000039 0.000039 0.000067"/>
                   <body name="gripper_clamp_left" pos="0 0 0" quat="0 0 0 1">
                     <joint name="left_clamp_joint" pos="0 0 0" axis="1 0 0" type="slide" range="-0.012 0" actuatorfrcrange="-1 1"/>
-                    <geom type="mesh" mesh="g1_clampLeft" friction="0.8 0.8 0.8"/>
+                    <geom type="mesh" mesh="g1_clampLeft" name="g1_clampLeft" group="0" solref="0.01 0.5" friction = "2 0.05 0.0001" conaffinity="1" contype="1"/>
                   </body>
                   <body name="gripper_clamp_right" pos="0 0 0" quat="0 0 0 1">
                     <joint name="right_clamp_joint" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.012" actuatorfrcrange="-1 1"/>
-                    <geom type="mesh" mesh="g1_clampRight" friction="0.8 0.8 0.8"/>
+                    <geom type="mesh" mesh="g1_clampRight" name="g1_clampRight" group="0" solref="0.01 0.5" friction = "2 0.05 0.0001" conaffinity="1" contype="1"/>
                   </body>
-                  <site name="gripper_center" pos="0 0 -0.0453" size="0.01" rgba="0 0 0 1"/>
+                  <site name="gripper_center" pos="0 0 -0.0453" size="0.001" rgba="0 0 0 0"/>
                 </body>
               </body>
             </body>
@@ -62,10 +62,10 @@
         </body>
       </body>
     </body>
-    <body name="box" pos="0.23 -0.16 0.15">
-      <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
-      <freejoint/>
-      <geom name="box" type="box" size="0.007 0.007 0.007" rgba="0.65 0.81 0.55 1" friction="0.8 0.8 0.8" contype="1" conaffinity="1"/>
+    <body name="box" mocap="true" pos="0.23 -0.16 0.107">
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
+        <geom name="box" type="box" size="0.007 0.007 0.007" rgba="0.65 0.81 0.55 1"
+              friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
   </worldbody>
   <actuator>
@@ -77,6 +77,7 @@
     <position joint="joint_6"/>
     <position joint="left_clamp_joint"/>
     <position joint="right_clamp_joint"/>
+    <!-- <motor gear="100" name="box1gear" joint="box1joint"/> -->
   </actuator>
   <sensor>
     <touch name="touch" site="gripper_center"/>

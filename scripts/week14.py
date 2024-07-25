@@ -63,9 +63,47 @@ movable_joints_indices = [joint_indices[joint_name] for joint_name in joint_name
 def get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices):
     ik = GradientDescentIK(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices)
     ik_lm = LevenbergMarquardtIK(model, data, step_size, tol, alpha, 0.1, movable_joints_indices)    
-    target_angles = ik.calculate(target_position, initialize_angles[:8], body_id)
+    target_angles = ik_lm.calculate(target_position, initialize_angles[:8], body_id)
     print("Target angles:", target_angles)
     return target_angles
+
+def quaternion_to_euler(w, x, y, z):
+    """
+    Convert a quaternion into euler angles (roll, pitch, yaw)
+    roll is rotation around x in radians (counterclockwise)
+    pitch is rotation around y in radians (counterclockwise)
+    yaw is rotation around z in radians (counterclockwise)
+    """
+    t0 = +2.0 * (w * x + y * z)
+    t1 = +1.0 - 2.0 * (x * x + y * y)
+    roll = np.arctan2(t0, t1)
+    
+    t2 = +2.0 * (w * y - z * x)
+    t2 = np.clip(t2, -1.0, 1.0)
+    pitch = np.arcsin(t2)
+    
+    t3 = +2.0 * (w * z + x * y)
+    t4 = +1.0 - 2.0 * (y * y + z * z)
+    yaw = np.arctan2(t3, t4)
+    
+    return roll, pitch, yaw  # in radians
+
+def set_ball_position(effector_pos, mid_gripper, data, model, support_link_id, ori_ball_pos):
+    quat = model.geom(support_link_id).quat
+    _, pitch, yaw = quaternion_to_euler(*quat)
+    supporter_pos = data.body(support_link_id).xpos
+    # ball_pos = data.body(ball_body_id).xpos
+
+    ori_rel_pos = ori_ball_pos - supporter_pos  # This assumes the initial grab position relative to the effector
+    abs_dis = np.linalg.norm(ori_rel_pos)
+
+    ball_position = supporter_pos + np.array([
+        abs_dis * np.cos(yaw) * np.cos(pitch),  # Adjust for pitch if necessary
+        abs_dis * np.sin(yaw) * np.cos(pitch),  # Adjust for pitch if necessary
+        abs_dis * np.sin(pitch)                # This uses pitch to adjust the height if grabbing rotated the pitch
+    ])
+
+    return ball_position
 
 # breakpoint()
 
@@ -127,7 +165,7 @@ def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, p
             # continue
         else:
             target_position = target_angles[joint_indices[name]]
-            new_position = soft_start_control(current_position, target_position, step_size, max_increment)
+            # new_position = soft_start_control(current_position, target_position, step_size, max_increment)
             control_signal = pids[name].calculate(target_position, current_position)
 
         # control_signal = pids[name].calculate(new_position, current_position)
@@ -210,8 +248,8 @@ with viewer.launch_passive(model, data) as Viewer:
         # Update control signals for all joints at each step
         control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles_onball)
         
-        end_effector = data.site(site_id).xpos
-        # position_updates.append(end_effector)
+        end_effector_pos = data.site(site_id).xpos
+        # position_updates.append(end_effector_pos)
         
         mujoco.mj_step(model, data)
         Viewer.sync()
@@ -223,9 +261,9 @@ with viewer.launch_passive(model, data) as Viewer:
         # Update control signals for all joints at each step
         control_arm_to_position(model, data, joint_names, joint_indices, pids, target_angles_2ball)
         
-        end_effector = data.body(body_id).xpos
+        end_effector_pos = data.body(body_id).xpos
         
-        error_tolerance = math.sqrt((end_effector[0] - target_position[0])**2 + (end_effector[1] - target_position[1])**2 + (end_effector[2] - target_position[2])**2)
+        error_tolerance = math.sqrt((end_effector_pos[0] - target_position[0])**2 + (end_effector_pos[1] - target_position[1])**2 + (end_effector_pos[2] - target_position[2])**2)
         
         if FLAG == 0 and error_tolerance < 0.02:
             FLAG = 1
@@ -241,9 +279,13 @@ with viewer.launch_passive(model, data) as Viewer:
         # Call the modified function with a small step size for a gradual close
         control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_2ball, step_size=0.01)
         
+        # get the distance between the end effector and the ball
+        
         if FLAG == 1:
-            end_effector = data.site(site_id).xpos
-            mocap_pos = end_effector
+            gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2
+            end_effector_pos = data.site(site_id).xpos
+            distance = np.linalg.norm(end_effector_pos[2] - ball_position[2])
+            mocap_pos = set_ball_position(end_effector_pos, gripper_mid_pos, data, model, body_id, ball_position)
             set_mocap_position(model, data, "box", mocap_pos)
             Viewer.sync()
         
@@ -254,10 +296,14 @@ with viewer.launch_passive(model, data) as Viewer:
     print("Step 4: lift the ball")
     for step in range(steps_4):
         control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_lift)
+        # breakpoint()
+        # get the position between the two grippers
+        
         
         if FLAG == 1:
-            end_effector = data.site(site_id).xpos
-            mocap_pos = end_effector
+            gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2
+            end_effector_pos = data.site(site_id).xpos
+            mocap_pos = set_ball_position(end_effector_pos, gripper_mid_pos, data, model, body_id, ball_position)
             set_mocap_position(model, data, "box", mocap_pos)
             Viewer.sync()
         
@@ -266,7 +312,7 @@ with viewer.launch_passive(model, data) as Viewer:
         time.sleep(0.02)
 
     print("All joints have moved towards their target positions.")
-    print("End-effector final position:", end_effector)
+    print("End-effector final position:", end_effector_pos)
 
 # make all the subpictures have teh same x and y axis scale
 # Plot end-effector trajectory

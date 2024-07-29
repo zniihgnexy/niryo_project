@@ -4,9 +4,11 @@ import numpy as np
 import time
 from mujoco import viewer
 import matplotlib.pyplot as plt
-from pid_controller import PIDController, PIDControllerWithDerivativeFilter
+from pid_controller import PIDController, PIDControllerWithDerivativeFilter, AdvancedPIDController
 from GradientDescentIK import GradientDescentIK
 from LevenbergMarquardtIK import LevenbergMarquardtIK
+from robot_controller import RobotController
+import simulation_steps as steps
 
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
@@ -97,11 +99,18 @@ def set_ball_position(effector_pos, mid_gripper, data, model, support_link_id, o
     ori_rel_pos = ori_ball_pos - supporter_pos  # This assumes the initial grab position relative to the effector
     abs_dis = np.linalg.norm(ori_rel_pos)
 
-    ball_position = supporter_pos + np.array([
-        abs_dis * np.cos(yaw) * np.cos(pitch),  # Adjust for pitch if necessary
-        abs_dis * np.sin(yaw) * np.cos(pitch),  # Adjust for pitch if necessary
-        abs_dis * np.sin(pitch)                # This uses pitch to adjust the height if grabbing rotated the pitch
-    ])
+    # get the gripper's roll pitch and yaw
+    gripper_id = model.geom('g1_clampLeft').id
+    gripper_roll, gripper_pitch, gripper_yaw = quaternion_to_euler(*model.geom(gripper_id).quat)
+    
+    ball_position = end_effector_pos
+    
+    data.mocap_quat = quat
+    # print("quat:", quat)
+    # print("data mocap now:", data.mocap_quat)
+    # mujoco.sync_mocap(model, data)
+    Viewer.sync()
+    # breakpoint()
 
     return ball_position
 
@@ -109,14 +118,14 @@ def set_ball_position(effector_pos, mid_gripper, data, model, support_link_id, o
 
 # Initialize PID controllers
 pids = {
-    'joint_1': PIDController(100, 0.5, 100),
-    'joint_2': PIDController(100, 0.8, 100),
-    'joint_3': PIDController(100, 0.06, 100),
-    'joint_4': PIDController(180, 0.06, 100),
-    'joint_5': PIDController(100, 0.0001, 100),
-    'joint_6': PIDControllerWithDerivativeFilter(162.5, 0.06, 100),
-    'left_clamp_joint': PIDControllerWithDerivativeFilter(10, 0.05, 50),
-    'right_clamp_joint': PIDControllerWithDerivativeFilter(10, 0.05, 50)
+    'joint_1': PIDController(100, 0, 100),
+    'joint_2': PIDController(100, 0, 100),
+    'joint_3': PIDController(100, 0, 100),
+    'joint_4': PIDController(180, 0, 100),
+    'joint_5': PIDController(100, 0, 100),
+    'joint_6': PIDController(162.5, 0, 100),
+    'left_clamp_joint': PIDControllerWithDerivativeFilter(20, 0, 100),
+    'right_clamp_joint': PIDControllerWithDerivativeFilter(20, 0, 100)
 }
 
 joint_angle_history = {name: [] for name in joint_names}
@@ -157,9 +166,9 @@ def control_arm_to_position_nogripper(model, data, joint_names, joint_indices, p
         current_position = data.qpos[joint_index]
         
         if name in ['left_clamp_joint', 'right_clamp_joint']:
-            target_position = -0.0051 if name == 'left_clamp_joint' else 0.00515
-            new_position = soft_start_control(current_position, target_position, step_size, max_increment)
-            control_signal = pids[name].calculate(new_position, current_position)
+            target_position = -0.00505 if name == 'left_clamp_joint' else 0.00505
+            # new_position = soft_start_control(current_position, target_position, step_size, max_increment)
+            control_signal = pids[name].calculate(target_position, current_position)
             # keep the exact same position as before
             # data.ctrl[joint_index] = 0
             # continue
@@ -226,6 +235,18 @@ with viewer.launch_passive(model, data) as Viewer:
     target_angles_lift = get_target_angles(model, data, list_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     print("target_angles_oripos:", target_angles_lift)
     
+    # move to new position, test point （0.15， 0.23， 0.05）
+    drop_above_position = np.array([0.15, 0.23, 0.15]) + np.array([0, 0, 0.1])
+    target_angles_drop = get_target_angles(model, data, drop_above_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
+    
+    # move downward to the target position
+    drop_target_position = np.array([0.15, 0.23, 0.155])
+    target_angles_drop_target = get_target_angles(model, data, drop_target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
+    
+    # lift a little bit
+    lift_target_position = drop_above_position
+    new_lift_position = get_target_angles(model, data, lift_target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
+    
     # breakpoint()
     # Simulation parameters
     duration = 10  # seconds
@@ -233,6 +254,8 @@ with viewer.launch_passive(model, data) as Viewer:
     steps_2 = int(10 * 50)
     steps_3 = int(10 * 50)
     steps_4 = int(10 * 50)
+    steps_5 = int(10 * 50)
+    steps_6 = int(10 * 50)
 
     # Set initial joint positions
     for name, angle in fixed_positions.items():
@@ -254,7 +277,8 @@ with viewer.launch_passive(model, data) as Viewer:
         mujoco.mj_step(model, data)
         Viewer.sync()
         time.sleep(0.02)
-        
+    
+    # breakpoint()
     
     print("Step 2: moving down")
     for step in range(steps_2):
@@ -299,6 +323,54 @@ with viewer.launch_passive(model, data) as Viewer:
         # breakpoint()
         # get the position between the two grippers
         
+        
+        if FLAG == 1:
+            gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2
+            end_effector_pos = data.site(site_id).xpos
+            mocap_pos = set_ball_position(end_effector_pos, gripper_mid_pos, data, model, body_id, ball_position)
+            set_mocap_position(model, data, "box", mocap_pos)
+            Viewer.sync()
+        
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
+        
+    print("Step 5: move to the new position")
+    for step in range(steps_5):
+        
+        control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_drop)
+        
+        if FLAG == 1:
+            gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2
+            end_effector_pos = data.site(site_id).xpos
+            mocap_pos = set_ball_position(end_effector_pos, gripper_mid_pos, data, model, body_id, ball_position)
+            set_mocap_position(model, data, "box", mocap_pos)
+            Viewer.sync()
+        
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
+    
+    print("Step 6: move down to the target position, down a little bit")
+    for step in range(steps_6):
+        control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, target_angles_drop_target)
+
+        if FLAG == 1:
+            gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2
+            end_effector_pos = data.site(site_id).xpos
+            mocap_pos = set_ball_position(end_effector_pos, gripper_mid_pos, data, model, body_id, ball_position)
+            set_mocap_position(model, data, "box", mocap_pos)
+            Viewer.sync()
+        
+        mujoco.mj_step(model, data)
+        Viewer.sync()
+        time.sleep(0.02)
+    
+    FLAG = 0
+    
+    print("Step 7: lift a little bit and leave the ball")
+    for step in range(steps_6):
+        control_arm_to_position_nogripper(model, data, joint_names, joint_indices, pids, new_lift_position)
         
         if FLAG == 1:
             gripper_mid_pos = (data.body('gripper_clamp_left').xpos + data.body('gripper_clamp_right').xpos) / 2

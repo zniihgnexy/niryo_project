@@ -39,3 +39,37 @@ class PIDControllerWithDerivativeFilter:
         self.pid.prev_error = error
         return output
 
+class AdvancedPIDController:
+    def __init__(self, kp, ki, kd, setpoint, ff_gain=0.1):
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.setpoint = setpoint
+        self.ff_gain = ff_gain
+        self.integral = 0
+        self.last_error = 0
+
+    def update(self, measurement, delta_time):
+        error = self.setpoint - measurement
+        self.integral += error * delta_time
+        derivative = (error - self.last_error) / delta_time
+        self.last_error = error
+        pid_output = (self.kp * error + self.ki * self.integral + self.kd * derivative)
+        feedforward_output = self.ff_gain * self.setpoint
+        return pid_output + feedforward_output
+    
+    def soft_start_control(self, current_position, target_position, step_size, max_increment):
+        # Calculate incremental step
+        direction = np.sign(target_position - current_position)
+        increment = direction * min(step_size, abs(target_position - current_position), max_increment)
+        return current_position + increment
+
+    def compute_feedforward(self, target_position, dynamic_parameters):
+        # Placeholder for a dynamic model or empirical data
+        # For simplicity, just return a fraction of the target position
+        return 0.1 * target_position
+
+    def control_with_feedforward(self, target_position, current_position):
+        feedforward_value = self.compute_feedforward(target_position, {})
+        pid_output = self.update(current_position, 1)  # Assuming delta_time = 1 for simplicity
+        return current_position + pid_output + feedforward_value

@@ -16,21 +16,3 @@ def check_before_close_gripper(data, body_id, target_position, tolerance):
 
 def ball_pos_update(data, site_id):
     return data.site(site_id).xpos
-
-# def control_close_gripper(target_angles, joint_indices, action='close'):
-#     for name in ['left_clamp_joint', 'right_clamp_joint']:
-#         joint_index = joint_indices[name]
-#         if name == 'left_clamp_joint':
-#             target_angles[joint_index] = -0.00505
-#         else:
-#             target_angles[joint_index] = 0.00505
-#     return target_angles
-
-# def control_open_gripper(self, target_angles, action='open'):
-#     for name in ['left_clamp_joint', 'right_clamp_joint']:
-#         joint_index = self.joint_indices[name]
-#         if name == 'left_clamp_joint':
-#             target_angles[joint_index] = 0.00505
-#         else:
-#             target_angles[joint_index] = -0.00505
-#     return target_angles

@@ -40,6 +40,16 @@ fixed_positions = {
     'right_clamp_joint': 0.00036
 }
 
+
+'''
+
+joints angles for fixed grabbing
+joint 4 0.0108
+joint 5 
+
+'''
+
+
 initialize_angles = np.array([fixed_positions[name] for name in joint_names])
 
 # target_position = [0.10000, 0.20000, 0.2000]

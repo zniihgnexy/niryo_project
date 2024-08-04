@@ -1,2 +1,1 @@
-Swap the position of cup and ball.
-Put the bottle on the right edge of the table.
+move the ball from A3 to D8

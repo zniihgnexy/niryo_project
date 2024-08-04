@@ -17,7 +17,7 @@
     <geom pos="0 0 0.1" type="mesh" mesh="base_link"/>
     <light name="overhead_light" pos="0 0 2" dir="0 0 -1" diffuse="1 1 1" specular="0.5 0.5 0.5"/>
     <body name="table">
-      <geom name="table_top" size="0.5 0.5 0.05" pos="0 0 0.05" type="box" rgba="0.8 0.8 0.8 1"/>
+      <geom name="table_top" size="1.0 1.0 0.05" pos="0 0 0.05" type="box" rgba="0.8 0.8 0.8 1"/>
     </body>
     <body name="shoulder_link" pos="0 0 0.203">
       <inertial pos="0 0 0" mass="0.71142" diaginertia="0.0017 0.0017 0.0032"/>
@@ -62,7 +62,7 @@
         </body>
       </body>
     </body>
-    <body name="ball" pos="0.20 -0.1 0.15">
+    <body name="ball" pos="0.10 -0.10 0.15">
       <joint name="ball_x" type="slide" pos="0 0 0" axis="1 0 0" range="-10 10"/>
       <joint name="ball_y" type="slide" pos="0 0 0" axis="0 1 0" range="-10 10"/>
       <joint name="ball_z" type="slide" pos="0 0 0" axis="0 0 1" range="-10 10"/>

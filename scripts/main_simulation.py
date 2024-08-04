@@ -11,21 +11,78 @@ from robot_controller import RobotController
 import robot_controller
 import simulation_steps as steps
 import ball_simulation_check as check
+from chess_board import chessboard_positions_list
+
+import ast
+
+def read_commands_from_file(file_path):
+    task_list = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+            # Find the position of the first '[' and the last ']' to identify the list
+            start_idx = line.find('[')
+            end_idx = line.rfind(']')
+            if start_idx != -1 and end_idx != -1:
+                list_str = line[start_idx:end_idx+1]
+                try:
+                    # Safely evaluate the string to a Python list
+                    command_list = ast.literal_eval(list_str)
+                    task_list.append(command_list)
+                except (SyntaxError, ValueError) as e:
+                    print(f"Skipping malformed line: {line}")
+                    print(f"Error: {e}")
+    return task_list
+
+file_path = '/home/xz2723/niryo_project/llmAPI/task_list.txt'
+task_list = read_commands_from_file(file_path)
+print(task_list)
+
+# get the target position using the name of the position
+def get_exact_position(chessboard_positions_list, position_name):
+    for position in chessboard_positions_list:
+        if position["name"] == position_name:
+            return position["position"][0], position["position"][1], 0.107
+
+def get_positions_for_this_command(task_list, chessboard_positions_list):
+    ball_position = None
+    ball_position_name = None
+    target_position = None
+    target_position_name = None
+    
+    for task in task_list:
+        if task[0] == "release":
+            target_position_name = task[1]  # Corrected to task[2]
+            target_position = get_exact_position(chessboard_positions_list, target_position_name)
+        
+        if task[0] == "grab":
+            ball_position_name = task[1]  # Corrected to task[2]
+            ball_position = get_exact_position(chessboard_positions_list, ball_position_name)
+            
+    return ball_position, ball_position_name, target_position, target_position_name
 
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'
 model = mujoco.MjModel.from_xml_path(model_path)
 data = mujoco.MjData(model)
 
-# Get the ID of the ball body
-ball_body_id = model.body('box').id
+# Get the positions and names of the ball and target
+ball_position, ball_position_name, target_position, target_position_name = get_positions_for_this_command(task_list, chessboard_positions_list)
+print("Ball position:", ball_position, "Ball position name:", ball_position_name)
+print("Target position:", target_position, "Target position name:", target_position_name)
+
+# Construct the ball body name
+ball_body_name = 'ball_' + ball_position_name
+ball_body_id = model.body(ball_body_name).id
+
+print("Ball body ID:", ball_body_id, "Ball body name:", ball_body_name)
 
 # Function to get the position of the ball
 def get_ball_position(data, body_id):
     return data.body(body_id).xpos
 
-ball_position = get_ball_position(data, ball_body_id)
-print("Initial box position:", ball_position)
+# ball_position = get_ball_position(data, ball_body_id)
+# print("Initial ball position:", ball_position)
 
 # Joint names and initialization
 joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6', 'left_clamp_joint', 'right_clamp_joint']
@@ -97,14 +154,14 @@ def pre_calc(model, data, target_position, initialize_angles, body_id, jacp, jac
 ########### define different tasks ###########
 niryo = RobotController(model, data, joint_names, pids, joint_indices=joint_indices)
 
-def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id):
+def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
     for step in range(steps):
         target_angles = check.updates_gripper_angles(niryo, target_angles, FLAG, joint_indices)
         RobotController.control_arm_to_position(niryo, target_angles)
         
         if FLAG == 1:
             ball_pos = check.ball_pos_update(data, site_id)
-            RobotController.set_mocap_position(niryo, "box", ball_pos)
+            RobotController.set_mocap_position(niryo, ball_body_name, ball_pos)
             Viewer.sync()
         
         RobotController.sync_viewer(niryo, Viewer)
@@ -112,7 +169,7 @@ def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_i
     
     return FLAG
 
-def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id):
+def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
     print("task: close the gripper")
     FLAG = 1
     for step in range(steps):
@@ -121,9 +178,10 @@ def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, si
         if check.check_before_close_gripper(data, body_id, target_position, 0.01):
             FLAG = 1
             # print("grab the ball")
+        FLAG = 1
         if FLAG == 1:
             ball_pos = check.ball_pos_update(data, site_id)
-            RobotController.set_mocap_position(niryo, "box", ball_pos)
+            RobotController.set_mocap_position(niryo, ball_body_name, ball_pos)
             Viewer.sync()
         
         RobotController.sync_viewer(niryo, Viewer)
@@ -131,7 +189,7 @@ def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, si
     
     return FLAG
 
-def open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id):
+def open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
     print("task: open the gripper")
     FLAG = 0
     for step in range(steps):
@@ -139,11 +197,11 @@ def open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, sit
         RobotController.control_arm_to_position(niryo, target_angles)
         if FLAG == 1:
             ball_pos = check.ball_pos_update(data, site_id)
-            RobotController.set_mocap_position(niryo, "box", ball_pos)
+            RobotController.set_mocap_position(niryo, ball_body_name, ball_pos)
             Viewer.sync()
         else:
             ball_pos = target_position
-            RobotController.set_mocap_position(niryo, "box", ball_pos)
+            RobotController.set_mocap_position(niryo, ball_body_name, ball_pos)
             Viewer.sync()
         
         RobotController.sync_viewer(niryo, Viewer)
@@ -154,95 +212,81 @@ def open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, sit
 #################################################
 
 ################# get target angles in different stages #################
-def get_task_name_and_target_angles(model, data, ball_position, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices, task_name):
+def get_task_name_and_target_angles(model, data, ball_position, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices, task_name, ball_position_name, target_position_name):
     # if the task name is a array like [move, lower above, ball position, none], [grab, ball, none, none], [release, ball, none, none], get the main token for further calculation
-    if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == "ball position":
+    if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
             target_position_for_move = ball_position + np.array([-0.006, 0, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.12])
-    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == "ball position":
+    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == ball_position_name:
         target_position_for_move = ball_position + np.array([0, 0, 0.18])
-    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == "ball position":
+    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
             target_position_for_move = ball_position + np.array([-0.006, 0, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.06])
 
-    elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == "target position":
+    elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
             target_position_for_move = target_position + np.array([-0.006, 0, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.12])
-    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == "target position":
+    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == target_position_name:
         target_position_for_move = target_position + np.array([0, 0, 0.18])
-    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == "target position":
+    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
             target_position_for_move = target_position + np.array([-0.006, 0, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.06])
     
-    elif task_name[0] == "grab" and task_name[1] == "ball":
+    elif task_name[0] == "grab" and task_name[1] == ball_position_name:
         if ball_position[0] >= 0:
             target_position_for_move = ball_position + np.array([-0.005, 0, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.07])
-    elif task_name[0] == "release" and task_name[1] == "ball":
+    elif task_name[0] == "release" and task_name[1] == target_position_name:
         if target_position[0] >= 0:
             target_position_for_move = target_position + np.array([-0.005, 0, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.07])
     
-    elif task_name[0] == "return" and task_name[1] == "initial position":
+    elif task_name[2] == "initial position":
         target_position_for_move = np.array([0.23, 0.00, 0.20])
     
     target_angles = pre_calc(model, data, target_position_for_move, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
     print(task_name, "target angles:", target_angles)
     return target_angles
-    
 
-task_list = [
-    ["move", "lower above", "ball position", "none"],
-    ["move", "exact", "ball position", "none"],
-    ["grab", "ball", "none", "none"],
-    ["move", "higher above", "ball position", "none"],
-    ["move", "higher above", "target position", "none"],
-    ["move", "lower above", "target position", "none"],
-    ["move", "exact", "target position", "none"],
-    ["release", "ball", "none", "none"],
-    ["move", "higher above", "target position", "none"],
-    ["return", "initial position", "none", "none"]
-]
 
-def control_command(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, task_name):
+def control_command(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, task_name, ball_position_name, target_position_name, ball_body_name):
     # target_angles = get_task_name_and_target_angles(model, data, ball_position, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices, task_name)
     
-    if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == "ball position":
+    if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == ball_position_name:
         print("moving to the lower above of ball position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == "ball position":
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == ball_position_name:
         print("lift the ball to higher above position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == "ball position":
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == ball_position_name:
         print("moving down to the ball position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
 
     elif task_name[0] == "grab" and task_name[1] == "ball":
         print("close the gripper\n")
-        FLAG = close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
+        FLAG = close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
     elif task_name[0] == "release" and task_name[1] == "ball":
         print("release the gripper")
-        FLAG = open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
+        FLAG = open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
 
-    elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == "target position":
+    elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == target_position_name:
         print("move down to the lower above of target position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == "target position":
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+    elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == target_position_name:
         print("move to the target position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == "target position":
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+    elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == target_position_name:
         print("move to the higher above of target position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    
-    elif task_name[0] == "return" and task_name[1] == "initial position":
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+
+    elif task_name[0] == "move" and task_name[1] == "initial position":
         print("move to the initial position")
-        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id)
-    
+        FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+
     return FLAG
 
 # Simulation loop for synchronized movement
@@ -250,12 +294,18 @@ with viewer.launch_passive(model, data) as Viewer:
     
     Viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME] = 0
     Viewer.sync()
-    ball_position = get_ball_position(data, ball_body_id)
-    print("Initial ball position:", ball_position)
+    # ball_position = get_ball_position(data, ball_body_id)
+    # print("Initial ball position:", ball_position)
     # 0.23, -0.16, 0.107
     
-    target_position = np.array([0.23, 0.16, 0.107])
-    print("Target position:", target_position)
+    ball_position, ball_position_name, target_position, target_position_name = get_positions_for_this_command(task_list, chessboard_positions_list)
+    print("Ball position:", ball_position, "Ball position name:", ball_position_name)
+    print("Target position:", target_position, "Target position name:", target_position_name)
+    # print("Target position:", target_position)
+    
+    # ball body name
+    ball_body_name = 'ball_' + ball_position_name
+    print("Ball body name:", ball_body_name)
     
     '''
     The steps are:
@@ -292,16 +342,20 @@ with viewer.launch_passive(model, data) as Viewer:
     angle_list = []
     
     print("calculating angle values...")
+    print("Task list:", task_list)
     for task_name in task_list:
-        target_angles = get_task_name_and_target_angles(model, data, ball_position, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices, task_name)
+        target_angles = get_task_name_and_target_angles(model, data, ball_position, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices, task_name, ball_position_name, target_position_name)
         print("Target angles:", target_angles)
         angle_list.append(target_angles)
 
     print("Starting simulation...")
 
     for task_name in task_list:
+        print("Task name:", task_name)
+        
         target_angles = angle_list.pop(0)
-        FLAG = control_command(Steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, task_name)
+        print("Target angles", target_angles)
+        FLAG = control_command(Steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, task_name, ball_position_name, target_position_name, ball_body_name)
         Viewer.sync()
         time.sleep(1)
     

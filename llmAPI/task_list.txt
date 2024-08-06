@@ -1,12 +1,20 @@
-Here are the individual commands that enables the robot arm to move a ball from position A3 to Position D8 on the 1000mm by 1000mm table.
-Command 1: ['move', 'higher above', 'A3']
-Command 2: ['move', 'lower above', 'A3']
-Command 3: ['move', 'exact', 'A3']
-Command 4: ['grab', 'A3']
-Command 5: ['move', 'higher above', 'A3']
-Command 6: ['move', 'higher above', 'D8']
-Command 7: ['move', 'exact', 'D8']
-Command 8: ['release', 'D8']
-Command 9: ['move', 'higher above', 'D8']
-Command 10: ['move', 'exact', 'initial position']
-#The commands instructs the robot arm to fetch the ball from position A3, move it to Position D8 and move back to its initial position.
+Here are the commands to move the ball from A3 to C5 on a 1000mm*1000mm table:
+1. ['move', 'exact', 'initial position']
+#Move from initial position to higher above ball position
+2. ['move', 'higher above', 'A3']
+#Move to lower above ball position
+3. ['move', 'lower above', 'A3']
+#Move to exact ball position
+4. ['move', 'exact', 'A3']
+#Grab the ball at A3
+5. ['grab', 'A3']
+#Lift the ball to higher above A3
+6. ['move', 'higher above', 'A3']
+#Move to higher above C5
+7. ['move', 'higher above', 'C5']
+#Move to exact C5
+8. ['move', 'exact', 'C5']
+#Release the ball at C5
+9. ['release', 'C5']
+#Return to initial position
+10. ['move', 'exact', 'initial position']

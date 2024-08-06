@@ -93,6 +93,7 @@ class RobotController:
         return roll, pitch, yaw
 
     def set_mocap_position(self, body_name, position):
+        # print("set mocap position")
         body_idx = self.model.body(name=body_name).id
         mocap_idx = self.model.body_mocapid[body_idx]
         if mocap_idx == -1:

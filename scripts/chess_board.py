@@ -1,37 +1,32 @@
-# Define the bounding box of the chessboard
-top_left = (0.20, 0.15)
-top_right = (0.30, 0.15)
-bottom_left = (0.20, -0.15)
-bottom_right = (0.30, -0.15)
+import numpy as np
 
-# Calculate the width and height of each square
-board_width = top_right[0] - top_left[0]
-board_height = top_left[1] - bottom_left[1]
-square_size_x = board_width / 8
-square_size_y = board_height / 8
+# Define the x-axis values for each column
+x_values = {
+    'A': 0.15,
+    'B': 0.20,
+    'C': 0.25
+}
+
+# Define the y-axis values
+y_values = np.concatenate((np.linspace(-0.25, -0.15, 4), np.linspace(0.15, 0.25, 3)))
 
 # Generate the chessboard positions
 chessboard_positions = []
-columns = 'ABCDEFGH'
-rows = '12345678'
+columns = 'ABC'
+rows = '1234567'
 
-for i in range(8):
-    for j in range(8):
-        square_name = columns[i] + rows[j]
-        x_position = top_left[0] + i * square_size_x + square_size_x / 2
-        y_position = top_left[1] - j * square_size_y - square_size_y / 2
+for i, column in enumerate(columns):
+    x_position = x_values[column]
+    for j, row in enumerate(rows):
+        square_name = column + row
+        y_position = y_values[j]
         chessboard_positions.append((square_name, (x_position, y_position)))
-
-# Print the chessboard positions
-# for position in chessboard_positions:
-    # print(f"{position[0]} is at position {position[1]}")
 
 # Save the positions as a list
 chessboard_positions_list = [{"name": pos[0], "position": pos[1]} for pos in chessboard_positions]
 
 # Example of how to access the list
 print(chessboard_positions_list)
-
 # target_position_name = "A1"
 # target_position = get_exact_position(chessboard_positions_list, target_position_name)
 

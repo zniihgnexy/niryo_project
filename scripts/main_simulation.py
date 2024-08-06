@@ -155,6 +155,7 @@ def pre_calc(model, data, target_position, initialize_angles, body_id, jacp, jac
 niryo = RobotController(model, data, joint_names, pids, joint_indices=joint_indices)
 
 def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
+    print("ball_name:", ball_body_name)
     for step in range(steps):
         target_angles = check.updates_gripper_angles(niryo, target_angles, FLAG, joint_indices)
         RobotController.control_arm_to_position(niryo, target_angles)
@@ -172,6 +173,7 @@ def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_i
 def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
     print("task: close the gripper")
     FLAG = 1
+    print("ball_name:", ball_body_name)
     for step in range(steps):
         target_angles = check.updates_gripper_angles(niryo, target_angles, FLAG, joint_indices)
         RobotController.control_arm_to_position(niryo, target_angles)
@@ -216,33 +218,33 @@ def get_task_name_and_target_angles(model, data, ball_position, target_position,
     # if the task name is a array like [move, lower above, ball position, none], [grab, ball, none, none], [release, ball, none, none], get the main token for further calculation
     if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.006, 0, 0])
+            target_position_for_move = ball_position + np.array([-0.008, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.12])
     elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == ball_position_name:
         target_position_for_move = ball_position + np.array([0, 0, 0.18])
     elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.006, 0, 0])
-        target_position_for_move = ball_position + np.array([0, 0, 0.06])
+            target_position_for_move = ball_position + np.array([-0.008, -0.001, 0])
+        target_position_for_move = ball_position + np.array([0, 0, 0.04])
 
     elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.006, 0, 0])
+            target_position_for_move = target_position + np.array([-0.008, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.12])
     elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == target_position_name:
         target_position_for_move = target_position + np.array([0, 0, 0.18])
     elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.006, 0, 0])
-        target_position_for_move = target_position + np.array([0, 0, 0.06])
+            target_position_for_move = target_position + np.array([-0.008, -0.001, 0])
+        target_position_for_move = target_position + np.array([0, 0, 0.04])
     
-    elif task_name[0] == "grab" and task_name[1] == ball_position_name:
+    elif task_name[0] == "grab":
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.005, 0, 0])
+            target_position_for_move = ball_position + np.array([-0.005, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.07])
-    elif task_name[0] == "release" and task_name[1] == target_position_name:
+    elif task_name[0] == "release":
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.005, 0, 0])
+            target_position_for_move = target_position + np.array([-0.005, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.07])
     
     elif task_name[2] == "initial position":
@@ -266,10 +268,10 @@ def control_command(steps, niryo, target_angles, FLAG, joint_indices, data, site
         print("moving down to the ball position")
         FLAG = move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
 
-    elif task_name[0] == "grab" and task_name[1] == "ball":
+    elif task_name[0] == "grab":
         print("close the gripper\n")
         FLAG = close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
-    elif task_name[0] == "release" and task_name[1] == "ball":
+    elif task_name[0] == "release":
         print("release the gripper")
         FLAG = open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
 
@@ -322,14 +324,14 @@ with viewer.launch_passive(model, data) as Viewer:
     '''
 
     # Simulation parameters
-    duration = 10  # seconds
-    steps_1 = int(10 * 50)
-    steps_2 = int(10 * 50)
-    steps_3 = int(10 * 50)
-    steps_4 = int(10 * 50)
-    steps_5 = int(10 * 50)
-    steps_6 = int(10 * 50)
-    Steps = int(10 * 50)
+    duration = 5  # seconds
+    steps_1 = int(duration * 50)
+    steps_2 = int(duration * 50)
+    steps_3 = int(duration * 50)
+    steps_4 = int(duration * 50)
+    steps_5 = int(duration * 50)
+    steps_6 = int(duration * 50)
+    Steps = int(duration * 50)
 
     # Set initial joint positions
     for name, angle in fixed_positions.items():
@@ -352,7 +354,7 @@ with viewer.launch_passive(model, data) as Viewer:
 
     for task_name in task_list:
         print("Task name:", task_name)
-        
+        # breakpoint()
         target_angles = angle_list.pop(0)
         print("Target angles", target_angles)
         FLAG = control_command(Steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, task_name, ball_position_name, target_position_name, ball_body_name)

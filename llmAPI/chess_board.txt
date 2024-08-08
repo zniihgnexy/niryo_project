@@ -1,0 +1,4 @@
+my chess board has the following object and positions
+the green ball is at A3 and is called ball_A3, position code is A3
+the red ball is at C3 and is called ball_C3, position code is C3
+the blue ball is at E5 and is called ball_E5, position code is E5

@@ -1,0 +1,14 @@
+1 single moving task
+move the target object from one place to another
+
+2 multiple moving tasks
+(1) move a target object from A to B then to C
+(2) move one object to target position and then move another object to another position
+
+3 reference object using names
+(1) move one object by calling the name
+(2) move different pawns like pawn1 and pawn by calling pawn with some description words
+
+4 given context of rules
+(1) partial chess board and move pieces and tell if follows the rules
+(2) more game like sentences, like take the pawn by the queen

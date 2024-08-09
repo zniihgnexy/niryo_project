@@ -62,17 +62,17 @@
         </body>
       </body>
     </body>
-    <body name="ball_A3" mocap="true" pos="0.15 -0.18333333333333335 0.107">
+    <body name="ball_A3" mocap="true" pos="0.17 -0.18333333333333335 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxA3" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
-    <!-- <body name="ball_B6" mocap="true" pos="0.15 0.15 0.107">
+    <body name="ball_B4" mocap="true" pos="0.22 -0.15 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxE6" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
-    <body name="ball_C4" mocap="true" pos="0.15 0.15 0.107">
+    <!-- <body name="ball_C4" mocap="true" pos="0.15 0.15 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxH7" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>

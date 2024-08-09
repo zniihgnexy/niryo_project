@@ -12,10 +12,14 @@
     <mesh name="g1_mainSupport" file="g1_mainSupport.stl"/>
     <mesh name="g1_clampLeft" file="g1_clampLeft.stl"/>
     <mesh name="g1_clampRight" file="g1_clampRight.stl"/>
+    <texture name="chess_texture" file="chess_board.png" type="2d"/>
+    <material name="chess_material" texture="chess_texture" texuniform="true" texrepeat="8 12"/>
   </asset>
   <worldbody>
     <body name="table" pos="0 0 0">
-      <geom name="table_top" type="box" size="0.5 0.5 0.05" pos="0 0 0.05" rgba="0.8 0.8 0.8 1" friction="0.8 0.8 0.8"/>
+        <geom name="table_top" type="box" size="0.5 0.5 0.05" pos="0 0 0.05" rgba="0.8 0.8 0.8 1" friction="0.8 0.8 0.8"/>
+        <!-- Specific area for the chessboard texture -->
+        <geom name="chess_area" type="box" size="0.2 0.3 0.001" pos="0.25 0 0.1" material="chess_material"/>
     </body>
     <geom pos="0 0 0.1" type="mesh" mesh="base_link"/>
     <light name="overhead_light" dir="0 0 -1" diffuse="1 1 1" specular="0.5 0.5 0.5" pos="0 0 2"/>
@@ -62,12 +66,12 @@
         </body>
       </body>
     </body>
-    <body name="ball_A3" mocap="true" pos="0.17 -0.18333333333333335 0.107">
+    <body name="ball_A3" mocap="true" pos="0.165 -0.21 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxA3" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
-    <body name="ball_B4" mocap="true" pos="0.22 -0.15 0.107">
+    <body name="ball_B4" mocap="true" pos="0.185 -0.19 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxE6" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>

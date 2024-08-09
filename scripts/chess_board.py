@@ -2,56 +2,32 @@ import numpy as np
 
 # Define the x-axis values for each column
 x_values = {
-    'A': 0.15,
-    'B': 0.20,
-    'C': 0.25
+    'A': 0.175,
+    'B': 0.225,
+    'C': 0.275
 }
 
-# Define the y-axis values
-y_values = np.concatenate((np.linspace(-0.25, -0.15, 4), np.linspace(0.15, 0.25, 3)))
+# Define the y-axis values for each row
+y_values = {
+    '1': -0.195,
+    '2': -0.145,
+    '3': -0.095,
+    '4': -0.045,
+    '5': 0.005,
+    '6': 0.055,
+    '7': 0.105
+}
 
 # Generate the chessboard positions
-chessboard_positions = []
-columns = 'ABC'
-rows = '1234567'
+chessboard_positions_list = []
 
-for i, column in enumerate(columns):
+# Iterate over each column and row combination
+for column in x_values.keys():
     x_position = x_values[column]
-    for j, row in enumerate(rows):
+    for row in y_values.keys():
         square_name = column + row
-        y_position = y_values[j]
-        chessboard_positions.append((square_name, (x_position, y_position)))
+        y_position = y_values[row]
+        chessboard_positions_list.append({"name": square_name, "position": (x_position, y_position)})
 
-# Save the positions as a list
-chessboard_positions_list = [{"name": pos[0], "position": pos[1]} for pos in chessboard_positions]
-
-# Example of how to access the list
+# Example of how to print the generated list
 print(chessboard_positions_list)
-# target_position_name = "A1"
-# target_position = get_exact_position(chessboard_positions_list, target_position_name)
-
-# print(f"The exact position of {target_position_name} is {target_position}")
-
-# def read_commands_from_file(file_path):
-#     """
-#     Reads commands from a text file and builds a task list.
-
-#     Args:
-#     file_path (str): Path to the text file containing the commands.
-
-#     Returns:
-#     list: A list of task commands.
-#     """
-#     task_list = []
-#     with open(file_path, 'r') as file:
-#         for line in file:
-#             line = line.strip()
-#             if line and not line.startswith('#'):
-#                 command = line.split('. ', 1)[1]
-#                 command_list = eval(command)
-#                 task_list.append(command_list)
-#     return task_list
-
-# file_path = '/home/xz2723/niryo_project/llmAPI/task_list.txt'
-# task_list = read_commands_from_file(file_path)
-# print(task_list)

@@ -14,12 +14,56 @@
     <mesh name="g1_clampRight" file="g1_clampRight.stl"/>
     <texture name="chess_texture" file="chess_board.png" type="2d"/>
     <material name="chess_material" texture="chess_texture" texuniform="true" texrepeat="8 12"/>
+    <texture name="A_label" file="A.png" type="2d"/>
+    <material name="A_label_material" texture="A_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="B_label" file="B.png" type="2d"/>
+    <material name="B_label_material" texture="B_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="C_label" file="C.png" type="2d"/>
+    <material name="C_label_material" texture="C_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="1_label" file="1.png" type="2d"/>
+    <material name="1_label_material" texture="1_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="2_label" file="2.png" type="2d"/>
+    <material name="2_label_material" texture="2_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="3_label" file="3.png" type="2d"/>
+    <material name="3_label_material" texture="3_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="4_label" file="4.png" type="2d"/>
+    <material name="4_label_material" texture="4_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="5_label" file="5.png" type="2d"/>
+    <material name="5_label_material" texture="5_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="6_label" file="6.png" type="2d"/>
+    <material name="6_label_material" texture="6_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="7_label" file="7.png" type="2d"/>
+    <material name="7_label_material" texture="7_label" texuniform="true" texrepeat="100 100"/>
+    <texture name="8_label" file="8.png" type="2d"/>
+    <material name="8_label_material" texture="8_label" texuniform="true" texrepeat="100 100"/>
   </asset>
   <worldbody>
     <body name="table" pos="0 0 0">
         <geom name="table_top" type="box" size="0.5 0.5 0.05" pos="0 0 0.05" rgba="0.8 0.8 0.8 1" friction="0.8 0.8 0.8"/>
         <!-- Specific area for the chessboard texture -->
-        <geom name="chess_area" type="box" size="0.2 0.3 0.001" pos="0.25 0 0.1" material="chess_material"/>
+        <geom name="chess_area" type="box" size="0.2 0.3 0.001" pos="0.26 0 0.1" material="chess_material"/>
+        <!-- Label A -->
+        <geom name="A_label" type="box" size="0.01 0.01 0.002" pos="0.195 -0.19 0.1" material="A_label_material"/>
+        <!-- Label B -->
+        <geom name="B_label" type="box" size="0.01 0.01 0.002" pos="0.235 -0.19 0.1" material="B_label_material"/>
+        <!-- Label C -->
+        <geom name="C_label" type="box" size="0.01 0.01 0.002" pos="0.28 -0.19 0.1" material="C_label_material"/>
+        <!-- Label 1 -->
+        <geom name="1_label" type="box" size="0.01 0.01 0.002" pos="0.32 -0.145 0.1" material="1_label_material"/>
+        <!-- Label 2 -->
+        <geom name="2_label" type="box" size="0.01 0.01 0.002" pos="0.32 -0.105 0.1" material="2_label_material"/>
+        <!-- Label 3 -->
+        <geom name="3_label" type="box" size="0.01 0.01 0.002" pos="0.32 -0.065 0.1" material="3_label_material"/>
+        <!-- Label 4 -->
+        <geom name="4_label" type="box" size="0.01 0.01 0.002" pos="0.32 -0.025 0.1" material="4_label_material"/>
+        <!-- Label 5 -->
+        <geom name="5_label" type="box" size="0.01 0.01 0.002" pos="0.32 0.02 0.1" material="5_label_material"/>
+        <!-- Label 6 -->
+        <geom name="6_label" type="box" size="0.01 0.01 0.002" pos="0.32 0.06 0.1" material="6_label_material"/>
+        <!-- Label 7 -->
+        <geom name="7_label" type="box" size="0.01 0.01 0.002" pos="0.32 0.10 0.1" material="7_label_material"/>
+        <!-- Label 8 -->
+        <geom name="8_label" type="box" size="0.01 0.01 0.002" pos="0.32 0.145 0.1" material="8_label_material"/>
     </body>
     <geom pos="0 0 0.1" type="mesh" mesh="base_link"/>
     <light name="overhead_light" dir="0 0 -1" diffuse="1 1 1" specular="0.5 0.5 0.5" pos="0 0 2"/>
@@ -66,21 +110,21 @@
         </body>
       </body>
     </body>
-    <body name="ball_A3" mocap="true" pos="0.165 -0.21 0.107">
+    <!-- <body name="ball_A3" mocap="true" pos="0.195 -0.065 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxA3" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
-    </body>
-    <body name="ball_B4" mocap="true" pos="0.185 -0.19 0.107">
+    </body> -->
+    <body name="ball_B6" mocap="true" pos="0.235 0.06 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxE6" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
-    <!-- <body name="ball_C4" mocap="true" pos="0.15 0.15 0.107">
+    <body name="ball_B4" mocap="true" pos="0.235 -0.025 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxH7" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
-    </body> -->
+    </body>
   </worldbody>
   <actuator>
     <position joint="joint_1"/>

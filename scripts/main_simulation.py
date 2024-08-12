@@ -1,5 +1,6 @@
 import math
 import mujoco
+import mujoco.viewer
 import numpy as np
 import time
 from mujoco import viewer
@@ -218,36 +219,39 @@ def get_task_name_and_target_angles(model, data, ball_position, target_position,
     # if the task name is a array like [move, lower above, ball position, none], [grab, ball, none, none], [release, ball, none, none], get the main token for further calculation
     if task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.008, -0.001, 0])
+            target_position_for_move = ball_position + np.array([-0.01, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.12])
     elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == ball_position_name:
         target_position_for_move = ball_position + np.array([0, 0, 0.18])
     elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == ball_position_name:
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.008, -0.001, 0])
+            target_position_for_move = ball_position + np.array([-0.01, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.04])
 
     elif task_name[0] == "move" and task_name[1] == "lower above" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.008, -0.001, 0])
+            target_position_for_move = target_position + np.array([-0.01, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.12])
     elif task_name[0] == "move" and task_name[1] == "higher above" and task_name[2] == target_position_name:
         target_position_for_move = target_position + np.array([0, 0, 0.18])
     elif task_name[0] == "move" and task_name[1] == "exact" and task_name[2] == target_position_name:
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.008, -0.001, 0])
+            target_position_for_move = target_position + np.array([-0.01, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.04])
     
     elif task_name[0] == "grab":
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.005, -0.001, 0])
+            target_position_for_move = ball_position + np.array([0, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.07])
     elif task_name[0] == "release":
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.005, -0.001, 0])
+            target_position_for_move = target_position + np.array([0, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.07])
     
     elif task_name[2] == "initial position":
+        target_position_for_move = np.array([0.23, 0.00, 0.20])
+    
+    elif task_name[1] == "initial position":
         target_position_for_move = np.array([0.23, 0.00, 0.20])
     
     target_angles = pre_calc(model, data, target_position_for_move, initialize_angles, body_id, jacp, jacr, movable_joints_indices)
@@ -324,7 +328,7 @@ with viewer.launch_passive(model, data) as Viewer:
     '''
 
     # Simulation parameters
-    duration = 5  # seconds
+    duration = 3  # seconds
     steps_1 = int(duration * 50)
     steps_2 = int(duration * 50)
     steps_3 = int(duration * 50)

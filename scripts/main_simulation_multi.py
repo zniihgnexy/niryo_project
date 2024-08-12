@@ -244,13 +244,16 @@ def get_task_name_and_target_angles(model, data, ball_position, target_position,
     
     elif task_name[0] == "grab":
         if ball_position[0] >= 0:
-            target_position_for_move = ball_position + np.array([-0.005, -0.001, 0])
+            target_position_for_move = ball_position + np.array([0, -0.001, 0])
         target_position_for_move = ball_position + np.array([0, 0, 0.07])
     elif task_name[0] == "release":
         if target_position[0] >= 0:
-            target_position_for_move = target_position + np.array([-0.005, -0.001, 0])
+            target_position_for_move = target_position + np.array([0, -0.001, 0])
         target_position_for_move = target_position + np.array([0, 0, 0.07])
     
+    elif task_name[1] == "initial position":
+        target_position_for_move = np.array([0.23, 0.00, 0.20])
+
     elif task_name[2] == "initial position":
         target_position_for_move = np.array([0.23, 0.00, 0.20])
     

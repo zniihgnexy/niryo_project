@@ -1,0 +1,106 @@
+\section*{Chess Rules}
+
+\subsection*{1. Chess Board and Pieces}
+\begin{itemize}
+    \item \textbf{Board Layout:} Chess is played on an 8x8 grid of squares, alternating between light and dark colors.
+    \item \textbf{Pieces:} Each player starts with 16 pieces: 
+    \begin{itemize}
+        \item 1 King
+        \item 1 Queen
+        \item 2 Rooks
+        \item 2 Bishops
+        \item 2 Knights
+        \item 8 Pawns
+    \end{itemize}
+    \item \textbf{Initial Setup:} 
+    \begin{itemize}
+        \item White pieces occupy the first and second ranks (rows 1 and 2), with pawns on the second rank.
+        \item Black pieces occupy the seventh and eighth ranks (rows 7 and 8), with pawns on the seventh rank.
+        \item From left to right: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook (for both sides).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{2. Piece Movement}
+\begin{itemize}
+    \item \textbf{King:}
+    \begin{itemize}
+        \item Moves one square in any direction (vertically, horizontally, or diagonally).
+        \item \textit{Castling:} A special move with a Rook under specific conditions (see below).
+    \end{itemize}
+    \item \textbf{Queen:} Moves any number of squares along a rank, file, or diagonal.
+    \item \textbf{Rook:} Moves any number of squares along a rank or file (horizontally or vertically).
+    \item \textbf{Bishop:} Moves any number of squares diagonally. The Bishop can only move along diagonals of the same color it is currently on.
+    \item \textbf{Knight:} Moves in an “L” shape: two squares in one direction and then one square perpendicular. Can jump over other pieces.
+    \item \textbf{Pawn:}
+    \begin{itemize}
+        \item Moves one square forward.
+        \item On its first move, it can move two squares forward.
+        \item Captures one square diagonally.
+        \item \textit{En passant:} A special pawn capture that can occur if a pawn moves two squares forward from its starting position and lands beside an opponent's pawn (details below).
+        \item \textit{Promotion:} When a pawn reaches the opponent’s back rank, it is promoted to a Queen, Rook, Bishop, or Knight.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Special Moves}
+\begin{itemize}
+    \item \textbf{Castling:}
+    \begin{itemize}
+        \item The King moves two squares towards a Rook on its initial square, and then the Rook moves to the square the King skipped over.
+        \item \textbf{Conditions:}
+        \begin{itemize}
+            \item Neither the King nor the Rook involved has moved previously.
+            \item No pieces are between the King and the Rook.
+            \item The King is not in check, does not pass through check, and does not end up in check.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{En Passant:}
+    \begin{itemize}
+        \item If a pawn moves two squares forward from its starting position and lands beside an opponent’s pawn, the opponent’s pawn can capture it as if it had only moved one square.
+        \item Must be done immediately on the next move.
+    \end{itemize}
+    \item \textbf{Pawn Promotion:}
+    \begin{itemize}
+        \item When a pawn reaches the opposite end of the board (the eighth rank for White, the first rank for Black), it must be promoted to a Queen, Rook, Bishop, or Knight (usually to a Queen).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{4. Check and Checkmate}
+\begin{itemize}
+    \item \textbf{Check:}
+    \begin{itemize}
+        \item The King is in check if it is under direct threat of capture by one or more of the opponent's pieces.
+        \item The player must move out of check by:
+        \begin{itemize}
+            \item Moving the King.
+            \item Blocking the check with another piece.
+            \item Capturing the attacking piece.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Checkmate:}
+    \begin{itemize}
+        \item The King is in checkmate if it is in check and no legal move can remove the threat.
+        \item The game ends immediately with a victory for the player delivering the checkmate.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{5. Draws}
+\begin{itemize}
+    \item \textbf{Stalemate:} Occurs when a player has no legal moves and is not in check. The game is a draw.
+    \item \textbf{Insufficient Material:} A draw occurs if neither player has enough pieces to force a checkmate (e.g., King vs. King, King and Bishop vs. King, etc.).
+    \item \textbf{Threefold Repetition:} The game is drawn if the same position occurs three times with the same player to move and all possible moves being the same.
+    \item \textbf{Fifty-move Rule:} A player can claim a draw if no pawn has been moved and no capture has been made in the last fifty moves by each side.
+\end{itemize}
+
+\subsection*{6. Game Phases}
+\begin{itemize}
+    \item \textbf{Opening:} The initial phase of the game where players develop their pieces.
+    \item \textbf{Middlegame:} The phase where players engage in tactical and strategic maneuvers.
+    \item \textbf{Endgame:} The phase where few pieces remain, and the focus shifts to checkmating the opponent.
+\end{itemize}
+
+\subsection*{7. General Rules}
+\begin{itemize}
+    \item \textbf{Turns:} Players alternate turns, with White moving first.
+    \item \textbf{Touch-Move Rule:} If a player touches one of their pieces, they must move it if it has a legal move.
+    \item \textbf{Illegal Moves:} If a player makes an illegal move, they must take it back and make a legal move. In some formal games, repeated illegal moves can lead to a loss.
+\end{itemize}

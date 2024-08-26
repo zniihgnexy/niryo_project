@@ -16,3 +16,6 @@ def check_before_close_gripper(data, body_id, target_position, tolerance):
 
 def ball_pos_update(data, site_id):
     return data.site(site_id).xpos
+
+def get_gripper_position(data, body_id):
+    return data.body(body_id).xpos

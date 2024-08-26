@@ -1,4 +1,14 @@
 my chess board has the following object and positions
-the green ball is at A3 and is called ball_A3, position code is A3
-the red ball is at C3 and is called ball_C3, position code is C3
-the blue ball is at E5 and is called ball_E5, position code is E5
+the rows in this chess board are labeled from A to C and the columns are labeled from 1 to 8.
+so the distance between two rows is 1 and the distance between two columns is 1.
+the dark squares are: in row A the dark squares are 2, 4, 6, 8; in row B the dark squares are 1, 3, 5, 7; in row C the dark squares are 2, 4, 6, 8.
+the light squares are: in row A the light squares are 1, 3, 5, 7; in row B the light squares are 2, 4, 6, 8; in row C the light squares are 1, 3, 5, 7.
+
+the white bishop -- ball_A3 -- green ball -- A3
+the ball with green color is the white bishop in the chess game and it is placed at position A3
+
+the white queen -- ball_C3 -- red ball -- C3
+the ball with red color is the white queen in the chess game and it is placed at position C3
+
+the white knight -- ball_B5 -- blue ball -- B5
+the ball with blue color is the white knight in the chess game and it is placed at position B5

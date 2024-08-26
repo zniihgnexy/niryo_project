@@ -1,0 +1,15 @@
+the main view is the position of the robot in the chess board
+
+the first rwo the is the closest to the robot is row A
+the first column that is on the right side of the robot is column 1
+
+For right and left relative position.
+the left square of position A1 would be A2, and left of A2 would be A3 and so on
+the right square of position B2 would be B1 and right of B3 would be B2 and so on
+number 1 is the right corner position of the line and number 8 is the left corner position of the line
+
+For forward and backward relative position,
+the forward square of position A1 would be B1 and forward of position B2 would be C2 and so on
+the backward square of position B2 would be A2 and backward of position C3 would be B3 and so on
+
+so the top line of the chess board is row C and the bottom line is row A

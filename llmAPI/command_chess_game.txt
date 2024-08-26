@@ -1,0 +1,3 @@
+move the queen to B4. pre-check
+move the bishop to C2. pre-check
+move the knight to C6. pre-check

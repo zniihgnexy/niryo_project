@@ -142,6 +142,8 @@ position_updates = []
 
 FLAG = 0
 
+total_error = 0
+
 def get_target_angles(model, data, target_position, initialize_angles, body_id, jacp, jacr, movable_joints_indices):
     ik = GradientDescentIK(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices)
     ik_lm = LevenbergMarquardtIK(model, data, step_size, tol, alpha, 0.1, movable_joints_indices)    
@@ -174,7 +176,7 @@ def move(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_i
     
     return FLAG
 
-def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name):
+def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name, total_error):
     print("task: close the gripper")
     FLAG = 1
     print("ball_name:", ball_body_name)
@@ -189,6 +191,19 @@ def close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, si
             ball_pos = check.ball_pos_update(data, site_id)
             RobotController.set_mocap_position(niryo, ball_body_name, ball_pos)
             Viewer.sync()
+            
+            # calculate the distance between the gripper's movement and the ball
+        gripper_id_1 = model.body('gripper_clamp_right').id
+        gripper_id_2 = model.body('gripper_clamp_left').id
+        gripper_pos_1 = check.get_gripper_position(data, gripper_id_1)
+        gripper_pos_2 = check.get_gripper_position(data, gripper_id_2)
+        
+        gripper_center_pos = (gripper_pos_1 + gripper_pos_2) / 2
+        error_distance = np.linalg.norm(gripper_center_pos - ball_pos)
+        # print("Error distance:", error_distance)
+        
+        total_error += error_distance - 0.0453
+        print("Total error:", total_error)
         
         RobotController.sync_viewer(niryo, Viewer)
         time.sleep(0.02)
@@ -277,7 +292,7 @@ def control_command(steps, niryo, target_angles, FLAG, joint_indices, data, site
 
     elif task_name[0] == "grab":
         print("close the gripper\n")
-        FLAG = close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)
+        FLAG = close_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name, total_error)
     elif task_name[0] == "release":
         print("release the gripper")
         FLAG = open_the_gripper(steps, niryo, target_angles, FLAG, joint_indices, data, site_id, body_id, ball_body_name)

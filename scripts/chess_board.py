@@ -3,8 +3,8 @@ import numpy as np
 # Define the x-axis values for each column
 x_values = {
     'A': 0.180,
-    'B': 0.225,
-    'C': 0.275
+    'B': 0.235,
+    'C': 0.28
 }
 
 # Define the y-axis values for each row

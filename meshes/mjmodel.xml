@@ -115,14 +115,14 @@
         <geom name="boxA3" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body> -->
-    <body name="ball_B6" mocap="true" pos="0.235 0.06 0.107">
+    <body name="ball_B5" mocap="true" pos="0.235 0.02 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
         <geom name="boxE6" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
-    <body name="ball_B4" mocap="true" pos="0.235 -0.025 0.107">
+    <body name="ball_C3" mocap="true" pos="0.275 -0.065 0.107">
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.0001 0.0001 0.0001"/>
-        <geom name="boxH7" type="sphere" size="0.010" rgba="0.65 0.81 0.55 1"
+        <geom name="boxH7" type="sphere" size="0.010" rgba="0.65 0.55 0.81 1"
               friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
   </worldbody>

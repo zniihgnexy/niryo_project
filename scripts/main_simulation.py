@@ -1,4 +1,17 @@
 import math
+"""
+This script performs a simulation of a robot arm manipulating a ball based on a given task list.
+The task list is read from a file and contains a sequence of commands for the robot arm to execute.
+The robot arm performs various tasks such as moving to a specific position, grabbing the ball, releasing the ball, etc.
+The script uses the Mujoco physics engine for simulation and visualization.
+It loads a Mujoco model and initializes the necessary variables and controllers.
+The positions and names of the ball and target are obtained from the task list and a chessboard positions list.
+The script defines several functions for performing different tasks, such as moving to a position, closing/opening the gripper, etc.
+These functions are called based on the commands in the task list.
+The simulation loop iterates through the task list and executes the corresponding tasks.
+For each task, the robot arm moves to the desired position, performs the task, and updates the viewer.
+Note: This script assumes that the necessary modules and dependencies are installed and the file paths are correct.
+"""
 import mujoco
 import mujoco.viewer
 import numpy as np

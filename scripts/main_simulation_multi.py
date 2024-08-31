@@ -1,4 +1,24 @@
+
 import math
+"""
+This script simulates a robot arm performing a series of tasks based on the given task lists.
+The tasks involve moving the robot arm to specific positions, grabbing and releasing objects.
+The script reads task lists from files and parses them to obtain the target positions and object positions.
+It then calculates the target joint angles using inverse kinematics and performs the tasks sequentially.
+The simulation loop uses a viewer to visualize the robot arm and objects in the Mujoco physics simulation.
+The robot arm is controlled using PID controllers for each joint.
+The tasks are performed in the following steps:
+1. Move the robot arm to a position slightly above the target object.
+2. Move the robot arm downward to the object, aligning the end effector with the object.
+3. Close the gripper to grab the object.
+4. Move the robot arm upward slightly to avoid collision.
+5. Move the robot arm to a position above the target position, maintaining the same height.
+6. Move the robot arm downward to the target position.
+7. Release the gripper to release the object.
+8. Move the robot arm upward to release the ball.
+The script supports multiple task lists, allowing the robot arm to perform different sequences of tasks.
+Note: This script requires the Mujoco physics simulation environment and the necessary dependencies.
+"""
 import mujoco
 import numpy as np
 import time

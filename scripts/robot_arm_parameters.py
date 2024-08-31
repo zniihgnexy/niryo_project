@@ -1,10 +1,19 @@
 import mujoco
+"""
+This script calculates and visualizes the positions and lengths of joints in a robot arm.
+
+Functions:
+- get_joint_positions(data): Returns the 3D positions of each joint in the robot arm.
+"""
+
 import numpy as np
 import time
 from mujoco import viewer
 import matplotlib.pyplot as plt
 from pid_controller import PIDController
 from kinemetic import robot_chain
+
+
 
 # Load the model
 model_path = '/home/xz2723/niryo_project/meshes/mjmodel.xml'

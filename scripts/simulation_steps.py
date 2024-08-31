@@ -1,9 +1,36 @@
 import math
+"""
+This module contains functions for simulating steps in a robot control system.
+Functions:
+- get_target_angles(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices, target_position, initialize_angles):
+    Calculates the target angles for the robot arm using gradient descent and Levenberg-Marquardt inverse kinematics algorithms.
+- pre_calculation(target_position, task_name, robot_controller, initialize_angles):
+    Performs pre-calculation for the target angles of a specific task.
+- step_move_to_position(robot_controller, target_position, initialize_angles, viewer):
+    Moves the robot arm to a target position.
+- step_close_gripper(robot_controller, viewer, data, target_position, FLAG):
+    Closes the gripper of the robot arm.
+- step_lift_up(robot_controller, target_position, initialize_angles, steps, viewer):
+    Lifts the robot arm to a new position.
+- step_release_gripper(robot_controller, steps, viewer):
+    Releases the gripper of the robot arm.
+- set_mocap_position(model, data, body_name, position):
+    Sets the position of a mocap body.
+- has_contact(data, sensor_name, model):
+    Checks if a specific sensor has contact with an object.
+- lift_to_new_position(robot_controller, initial_position, lift_height, initialize_angles):
+    Calculates the target angles for lifting the robot arm to a new position.
+- run_simulation(robot, viewer):
+    Runs the simulation of the robot control system.
+"""
 import time
 import mujoco
 import numpy as np
 from GradientDescentIK import GradientDescentIK
 from LevenbergMarquardtIK import LevenbergMarquardtIK
+
+
+
 
 def get_target_angles(model, data, step_size, tol, alpha, jacp, jacr, movable_joints_indices, target_position, initialize_angles):
     body_id = model.body('g1_mainSupport_link').id

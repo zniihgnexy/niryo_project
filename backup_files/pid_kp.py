@@ -1,4 +1,28 @@
 import numpy as np
+"""
+PID Controller Class and Joint Testing
+This code defines a PIDController class and performs joint testing using the Mujoco physics engine. The PIDController class implements a proportional-integral-derivative controller with adjustable gains (Kp, Ki, Kd). The joint testing involves finding the best combination of Kp, Ki, and Kd values for each joint to achieve smooth and accurate movement.
+Classes:
+- PIDController: Implements a PID controller with adjustable gains.
+Functions:
+- calculate: Calculates the control signal based on the target and current values.
+Variables:
+- model_path: The path to the Mujoco model XML file.
+- joint_names: A list of joint names to test.
+- test_names: A list of joint names to test.
+- joint_ranges_list: A dictionary of joint names and their corresponding target ranges.
+- joint_ranges: A dictionary of joint names and their corresponding target ranges for testing.
+- kp_values: An array of Kp values to test.
+- kd_values: An array of Kd values to test.
+- ki_values: An array of Ki values to test.
+- joint_indices: A dictionary of joint names and their corresponding indices in the Mujoco model.
+- pids: A dictionary of joint names and their corresponding PIDController objects.
+- best_kp_results: A dictionary of joint names and their best Kp values.
+- best_kd_results: A dictionary of joint names and their best Kd values.
+- best_ki_results: A dictionary of joint names and their best Ki values.
+- oscillation_history: A dictionary of Kp values and their corresponding oscillation values.
+- fixed_positions: A dictionary of joint names and their fixed positions for testing.
+"""
 import mujoco
 import time
 from mujoco import viewer

@@ -1,8 +1,48 @@
 import mujoco
+"""
+This module contains the `RobotController` class which is responsible for controlling the robot's movements and actions.
+Attributes:
+    model (mujoco.Model): The Mujoco model of the robot.
+    data (mujoco.Data): The Mujoco data associated with the model.
+    joint_names (list): A list of the names of the robot's joints.
+    pid_params (dict): A dictionary containing the PID parameters for each joint.
+    joint_indices (dict): A dictionary mapping joint names to their corresponding indices.
+    pids (dict): A dictionary containing PIDController objects for each joint.
+    position_updates (list): A list of position updates of the robot's end effector.
+    joint_angle_history (dict): A dictionary mapping joint names to lists of their angle history.
+    movable_joints_indices (list): A list of indices of the movable joints.
+    jacp (numpy.ndarray): A 3xnv array representing the Jacobian matrix for position control.
+    jacr (numpy.ndarray): A 3xnv array representing the Jacobian matrix for rotation control.
+    alpha (float): The learning rate for the IK algorithms.
+    tol (float): The tolerance for convergence in the IK algorithms.
+    step_size (float): The step size for the IK algorithms.
+    site_id (int): The ID of the gripper center site.
+    sensor_id (int): The ID of the touch sensor.
+    end_effector_pos (numpy.ndarray): The position of the robot's end effector.
+Methods:
+    get_target_angles(target_position, initialize_angles):
+        Calculates the target joint angles for a given target position.
+    control_arm_to_position(target_angles):
+        Controls the robot's arm to reach the target joint angles.
+    control_close_gripper(target_angles, joint_indices):
+        Controls the robot's gripper to close.
+    control_open_gripper(target_angles, joint_indices):
+        Controls the robot's gripper to open.
+    sync_viewer(viewer):
+        Synchronizes the viewer with the robot's model and data.
+    set_initial_positions(fixed_positions, joint_indices):
+        Sets the initial positions of the robot's joints.
+    quaternion_to_euler(w, x, y, z):
+        Converts a quaternion to Euler angles.
+    set_mocap_position(body_name, position):
+        Sets the position of a mocap body.
+"""
 import numpy as np
 from GradientDescentIK import GradientDescentIK
 from LevenbergMarquardtIK import LevenbergMarquardtIK
 from pid_controller import PIDController, PIDControllerWithDerivativeFilter
+
+
 
 class RobotController:
     def __init__(self, model, data, joint_names, pid_params, joint_indices):

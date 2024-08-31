@@ -1,4 +1,16 @@
 import mujoco
+"""
+This script performs a PID parameter optimization for a specific joint in a Mujoco model. It tests different combinations of Kv (velocity gain) and Ki (integral gain) values to find the best PID parameters that result in the lowest shift from the initial position.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Raises:
+    None
+"""
 import numpy as np
 import time
 from mujoco import viewer

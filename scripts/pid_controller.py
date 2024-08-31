@@ -1,4 +1,58 @@
 import mujoco
+"""
+A proportional-integral-derivative (PID) controller class.
+Args:
+    Kp (float): Proportional gain.
+    Ki (float): Integral gain.
+    Kd (float): Derivative gain.
+Attributes:
+    Kp (float): Proportional gain.
+    Ki (float): Integral gain.
+    Kd (float): Derivative gain.
+    integral_error (float): Integral error.
+    prev_error (float): Previous error.
+    dt (float): Time step.
+Methods:
+    calculate(target, current): Calculates the control output based on the target and current values.
+"""
+"""
+A PID controller class with derivative filter.
+Args:
+    Kp (float): Proportional gain.
+    Ki (float): Integral gain.
+    Kd (float): Derivative gain.
+    tau (float, optional): Time constant for the filter. Defaults to 0.1.
+    dt (float, optional): Time step. Defaults to 0.005.
+Attributes:
+    pid (PIDController): PID controller object.
+    tau (float): Time constant for the filter.
+    dt (float): Time step.
+    previous_derivative (float): Previous derivative value.
+Methods:
+    calculate(setpoint, measurement): Calculates the control output based on the setpoint and measurement values.
+"""
+"""
+An advanced PID controller class with feedforward control.
+Args:
+    kp (float): Proportional gain.
+    ki (float): Integral gain.
+    kd (float): Derivative gain.
+    setpoint (float): Setpoint value.
+    ff_gain (float, optional): Feedforward gain. Defaults to 0.1.
+Attributes:
+    kp (float): Proportional gain.
+    ki (float): Integral gain.
+    kd (float): Derivative gain.
+    setpoint (float): Setpoint value.
+    ff_gain (float): Feedforward gain.
+    integral (float): Integral value.
+    last_error (float): Last error value.
+Methods:
+    update(measurement, delta_time): Updates the controller based on the measurement and time step.
+    soft_start_control(current_position, target_position, step_size, max_increment): Calculates the control output for soft start control.
+    compute_feedforward(target_position, dynamic_parameters): Computes the feedforward value based on the target position and dynamic parameters.
+    control_with_feedforward(target_position, current_position): Calculates the control output with feedforward control.
+"""
 import numpy as np
 import time
 from mujoco import viewer

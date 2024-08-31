@@ -1,4 +1,18 @@
 import numpy as np
+"""
+Generate chessboard positions based on x and y values.
+
+Parameters:
+    None
+
+Returns:
+    chessboard_positions_list (list): A list of dictionaries containing the name and position of each square on the chessboard.
+
+Example:
+    chessboard_positions_list = generate_chessboard_positions()
+    Output:
+    [{'name': 'A1', 'position': (0.18, -0.145)}, {'name': 'A2', 'position': (0.18, -0.105)}, {'name': 'A3', 'position': (0.18, -0.065)}, {'name': 'A4', 'position': (0.18, -0.025)}, {'name': 'A5', 'position': (0.18, 0.02)}, {'name': 'A6', 'position': (0.18, 0.06)}, {'name': 'A7', 'position': (0.18, 0.1)}, {'name': 'A8', 'position': (0.18, 0.145)}, {'name': 'B1', 'position': (0.235, -0.145)}, {'name': 'B2', 'position': (0.235, -0.105)}, {'name': 'B3', 'position': (0.235, -0.065)}, {'name': 'B4', 'position': (0.235, -0.025)}, {'name': 'B5', 'position': (0.235, 0.02)}, {'name': 'B6', 'position': (0.235, 0.06)}, {'name': 'B7', 'position': (0.235, 0.1)}, {'name': 'B8', 'position': (0.235, 0.145)}, {'name': 'C1', 'position': (0.28, -0.145)}, {'name': 'C2', 'position': (0.28, -0.105)}, {'name': 'C3', 'position': (0.28, -0.065)}, {'name': 'C4', 'position': (0.28, -0.025)}, {'name': 'C5', 'position': (0.28, 0.02)}, {'name': 'C6', 'position': (0.28, 0.06)}, {'name': 'C7', 'position': (0.28, 0.1)}, {'name': 'C8', 'position': (0.28, 0.145)}]
+"""
 
 # Define the x-axis values for each column
 x_values = {

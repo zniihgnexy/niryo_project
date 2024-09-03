@@ -1,4 +1,32 @@
-README
+# Robot Control Using Large Language Model
+
+The structure of the project is as following picture:
+
+![Project Structure](./figures/hard_soft.jpg)
+
+The project is divided into two parts: the hard part and the soft part. The hard part is the robot arm control part, which is responsible for the control of the robot arm. The soft part is the language model part, which is responsible for the generation of the instruction.
+
+For the language model part, we use the GPT-4 model from OpenAI. The model is used to generate the instruction for the robot arm. The instruction is then sent to the robot arm control part, which is then used for the control of the robot arm.
+
+The four stages of the language model are as follows:
+
+![Language Model Stages overview](./figures/pipeline_whole.jpg)
+
+The first stage is used to split the instruction into multiple smaller parts.
+
+![Language Model Stages 1](./figures/stage1.jpg)
+
+The second stage is used to clear the name referring inside a natural language instruction. As in the example below, the instruction "queen" also refers to the piece at B6.
+
+![Language Model Stages 2](./figures/stage2.jpg)
+
+The third stage is used to clear the position referring inside a natural language instruction. As in the example below, the instruction "right square of B6" also refers to the position at B5.
+
+![Language Model Stages 3](./figures/stage3.jpg)
+
+The final stage here is teh final check of overall logic and the consistency of the instruction.
+
+![Language Model Stages 4](./figures/stage4.jpg)
 
 # Project Environment Setup
 
@@ -65,7 +93,7 @@ https://github.com/user-attachments/assets/71c3d2f9-7d9a-4fef-a84f-e60a670d1be6
 
 This experiment is based on GPT-4 language model, therefore the API key is required. Please setup your own key in the llmAPI/api.py file. (You can get the key from https://beta.openai.com/account/api-keys)
 
-For now the api file has not been uploaded.
+For now the api file has **not been uploaded**.
 
 ## Project Structure
 

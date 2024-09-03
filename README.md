@@ -53,8 +53,15 @@ See the videos below:
 single-instruction:
 <video controls src="single_instruction.mp4" title="Title"></video>
 
+https://github.com/user-attachments/assets/400ba2c1-fa2e-46e6-ac44-b870bc80d0c0
+
+
 multi-instruction:
 <video controls src="multi_intruction.mp4" title="Title"></video>
+
+https://github.com/user-attachments/assets/71c3d2f9-7d9a-4fef-a84f-e60a670d1be6
+
+
 
 ## Notes for Language model
 

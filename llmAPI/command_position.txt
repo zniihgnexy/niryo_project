@@ -1,150 +1,100 @@
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-move the green ball to its right square
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-put the queen to the right square of the bishop
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
-Move the Knight to the top left corner of the board
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the bishop one square further from its original position
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop
+move the knight to the further square of the bishop

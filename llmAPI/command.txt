@@ -1,1 +1,1 @@
-Move the queen to the left square of the knight
+move the queen to the further square of the bishop

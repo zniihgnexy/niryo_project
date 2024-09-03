@@ -1,15 +1,38 @@
-the main view is the position of the robot in the chess board
+The main view is from the perspective of the robot, which is positioned behind row A in the center of the chessboard.
 
-the first rwo the is the closest to the robot is row A
-the first column that is on the right side of the robot is column 1
+Rows: The row closest to the robot is row A, and the row furthest from the robot is row C.
+Columns: The first column to the right of the robot is column 1, and the furthest to the left is column 8.
+Relative Positioning:
 
-For right and left relative position.
-the left square of position A1 would be A2, and left of A2 would be A3 and so on
-the right square of position B2 would be B1 and right of B3 would be B2 and so on
-number 1 is the right corner position of the line and number 8 is the left corner position of the line
+Right and Left:
 
-For forward and backward relative position,
-the forward square of position A1 would be B1 and forward of position B2 would be C2 and so on
-the backward square of position B2 would be A2 and backward of position C3 would be B3 and so on
+Moving left from position A1 takes you to A2, then A3, and so on.
+Moving right from position B2 takes you to B1, then further right to B1, and so on.
+Column 1 is always on the rightmost edge of the board, and column 8 on the leftmost edge.
+Closer and Further:
 
-so the top line of the chess board is row C and the bottom line is row A
+Moving further from position A1 takes you to B1, and moving further from B2 takes you to C2. they only change the row number(A-C) not the square number(1-8).
+Moving closer from position B2 takes you to A2, and moving closer from C3 takes you to B3. they only change the row number(A-C) not the square number(1-8).
+The terms "closer" and "further" refer to squares that are nearer to or further from the robot's position, respectively.
+Chessboard Layout:
+
+Dark Squares:
+
+In row A: Columns 2, 4, 6, and 8 are dark.
+In row B: Columns 1, 3, 5, and 7 are dark.
+In row C: Columns 2, 4, 6, and 8 are dark.
+Light Squares:
+
+In row A: Columns 1, 3, 5, and 7 are light.
+In row B: Columns 2, 4, 6, and 8 are light.
+In row C: Columns 1, 3, 5, and 7 are light.
+Chess Pieces and Positions:
+
+White Bishop (Green Ball): Positioned at A3. The green ball represents the white bishop in the chess game.
+White Queen (Red Ball): Positioned at C3. The red ball represents the white queen in the chess game.
+White Knight (Blue Ball): Positioned at B5. The blue ball represents the white knight in the chess game.
+In this description, the positional references are made clearer by consistently using the robot's perspective as a reference point. "Closer" and "further" refer to the proximity to the robot, while "right" and "left" correspond to the robot's right and left. The layout of the chessboard, with the row and column labeling, is made explicit, and the positions of the pieces are clearly defined with their respective colors and roles.
+
+example: the further position of the knight at B5 should be C5, and the closer position should be A5. The right position of the queen at C3 should be C2, and the left position should be C4. The further position of the bishop at A3 should be B3, and the closer position should be A2. The descriptions of the positions are consistent with the chessboard layout and the robot's perspective, providing a clear and accurate reference for the robot's movements.
+keep in mind each position is relative to the robot's perspective, and the descriptions are consistent with the chessboard layout and the robot's position. The descriptions provide clear and accurate references for the robot's movements, ensuring precise execution of the commands.
+if only further or closer is mentioned, it is assumed that the movement is along the same column. If only right or left is mentioned, it is assumed that the movement is along the same row. If both are mentioned, the movement is diagonal.

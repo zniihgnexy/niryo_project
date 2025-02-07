@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于大语言模型的机器人控制</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+        h1, h2, h3 { color: #333; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>基于大语言模型的机器人控制</h1>
+    <p>本项目结构如下图所示：</p>
+    <img src="./figures/hard_soft.jpg" alt="项目结构" style="width: 80%; height: auto;">
+
+    <h2>项目概述</h2>
+    <p>该项目分为两个部分：硬件部分和软件部分。硬件部分负责机械臂的控制，而软件部分使用大语言模型（LLM）生成指令，并将其发送给机械臂进行控制。</p>
+
+    <h2>语言模型部分</h2>
+    <p>我们使用 OpenAI 的 GPT-4 生成机械臂的控制指令。整个语言模型的处理流程如下：</p>
+    <img src="./figures/pipeline_whole.jpg" alt="语言模型流程概述" style="width: 40%; height: auto;">
+
+    <h3>阶段 1：拆分指令</h3>
+    <p>该阶段将复杂的自然语言指令拆分成多个小任务。</p>
+    <img src="./figures/stage1.jpg" alt="阶段 1" style="width: 70%; height: auto;">
+
+    <h3>阶段 2：清理名称指代</h3>
+    <p>消除指令中的名称歧义，例如在以下示例中，“queen”指的是 B6 位置上的棋子。</p>
+    <img src="./figures/stage2.jpg" alt="阶段 2"style="width: 60%; height: auto;">
+
+    <h3>阶段 3：清理位置指代</h3>
+    <p>解析并消除指令中的模糊位置描述，例如“B6 右侧的格子”指的是 B5。</p>
+    <img src="./figures/stage3.jpg" alt="阶段 3" style="width: 60%; height: auto;">
+
+    <h3>阶段 4：最终检查</h3>
+    <p>该阶段用于检查指令的逻辑一致性和整体合理性。</p>
+    <img src="./figures/stage4.jpg" alt="阶段 4" style="width: 60%; height: auto;">
+
+    <h2>项目环境搭建</h2>
+    <h3>先决条件</h3>
+    <ul>
+        <li>Python 3.8 或更高版本</li>
+        <li>mujoco 210（最新版本）</li>
+        <li>不使用 mujoco-py，仅使用 mujoco</li>
+        <li>推荐使用 mamba 进行环境管理</li>
+    </ul>
+
+    <h3>安装步骤</h3>
+    <pre>
+    git clone https://github.com/zniihgnexy/niryo_project.git
+    cd niryo_project
+    mamba env create -f mamba_mujoco_base.yml
+    conda activate mujoco
+    pip install -r requirements.txt
+    </pre>
+
+    <h2>运行模拟演示</h2>
+    <p>运行以下脚本以进行单指令和多指令的模拟：</p>
+    <pre>
+    python main_simulation.py
+    python main_simulation_multi.py
+    </pre>
+
+    <h3>单指令模拟</h3>
+    <p>输入命令：“将皇后移动到 C2”。机器人会将小绿球（位于 B6 的皇后）移动到 C2。</p>
+    <a href="https://github.com/user-attachments/assets/400ba2c1-fa2e-46e6-ac44-b870bc80d0c0">单指令模拟视频</a>
+
+    <h3>多指令模拟</h3>
+    <p>输入命令：“将皇后移动到最远的格子，并将兵移动到对角格子”。机器人会将皇后（B6 的球）移动到 C6，并将兵（B3 的球）移动到 C2。</p>
+    <a href="https://github.com/user-attachments/assets/71c3d2f9-7d9a-4fef-a84f-e60a670d1be6">多指令模拟视频</a>
+
+    <h2>语言模型 API 说明</h2>
+    <p>本实验基于 OpenAI 的 GPT-4 语言模型，因此需要 API Key。请在 <code>llmAPI/api.py</code> 文件中设置您的 API Key（可在 <a href="https://beta.openai.com/account/api-keys">OpenAI API Key 页面</a> 申请）。</p>
+    <p>目前，API 配置文件尚未上传。</p>
+
+    <h2>项目结构</h2>
+    <p>项目目录如下：</p>
+    <pre>
+    niryo_project/
+    ├── figures/               # 项目图片
+    ├── llmAPI/                # GPT-4 API 配置
+    ├── scripts/               # 主要代码文件
+    ├── main_simulation.py     # 单指令模拟脚本
+    ├── main_simulation_multi.py # 多指令模拟脚本
+    ├── requirements.txt       # 依赖项
+    ├── mamba_mujoco_base.yml  # 环境配置
+    ├── README.md              # 项目说明
+    </pre>
+</body>
+</html>

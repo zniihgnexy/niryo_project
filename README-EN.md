@@ -1,5 +1,12 @@
 # Robot Control Using Large Language Model
 
+## 📚 Read this in your language
+
+- [🇺🇸 English](README-EN.md)
+- [cn 中文](./files/README.md)
+- [🇯🇵 日本語](./files/README-JP.md)
+
+
 The structure of the project is as following picture:
 
 ![Project Structure](./figures/hard_soft.jpg)
